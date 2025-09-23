@@ -15,9 +15,13 @@ var mu sync.Mutex
 // Middleware to limit requests from a single IP
 func rateLimitMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// In a real app behind a reverse proxy, you would get the real IP
-		// from the X-Forwarded-For header.
-		ip := r.RemoteAddr
+		// Get the real IP address from the X-Forwarded-For header.
+		// This is crucial when running behind a reverse proxy like Traefik.
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			// Fallback to RemoteAddr for local development or direct connections.
+			ip = r.RemoteAddr
+		}
 
 		// Log every request attempt to the summarize endpoint
 		LogComponent("RATE_LIMITER", "Request received for %s from IP: %s", r.URL.Path, ip)

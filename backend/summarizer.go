@@ -32,14 +32,10 @@ func generateSummary(articleText string) (string, error) {
 	result, err := client.Models.GenerateContent(
 		ctx,
 		"gemini-2.0-flash-lite",
-		genai.Text(`
-			Generate a two to five sentence summary of the article. 
-			Be concise and focused on the main outcome or findings.
-			Make the text easy to understand for a general audience.
-			Introduce a little formatting with line breaks.
-			Do not include any links or references.
-			Don't include any introductory or concluding phrases. 
-			This is the text: `+articleText),
+		genai.Text(`Summarize the following article in 2-5 concise sentences for a general audience, focusing on the main outcome. Format with line breaks. Omit links, references, and introductory phrases.
+
+Article:
+`+articleText),
 		nil,
 	)
 

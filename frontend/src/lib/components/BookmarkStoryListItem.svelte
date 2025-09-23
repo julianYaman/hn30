@@ -1,36 +1,70 @@
 <script>
   import { generatePlaceholder, getDomain, timeAgo } from '$lib/utils.js';
   import { bookmarks } from '$lib/stores/bookmarks.js';
+  import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import { imageCache } from '$lib/stores/imageCache.js';
+
   export let bookmark;
 
-  $: imageUrl = bookmark.ogImage || generatePlaceholder(bookmark.title, 400, 225);
+  const placeholderUrl = generatePlaceholder(bookmark.title, 400, 225);
+  $: imageUrl = bookmark.ogImage || placeholderUrl;
   $: domain = getDomain(bookmark.url);
 
+  const wasInitiallyLoaded = $imageCache.has(imageUrl);
+  let imageLoaded = wasInitiallyLoaded;
+
+  onMount(() => {
+    if (imageLoaded) return;
+
+    const img = new Image();
+    img.onload = () => {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    };
+    img.onerror = () => {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    };
+    img.src = imageUrl;
+
+    if (img.complete) {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    }
+  });
+
   function remove(e) {
-    // prevent parent link navigation
     e?.stopPropagation?.();
     bookmarks.remove(bookmark.id);
   }
 
-  // Show relative (e.g. "3 days ago") for items <= 5 days old; otherwise show local date only.
   function fmt(iso) {
     if (!iso) return 'Unknown';
     const d = new Date(iso);
     const ms = Date.now() - d.getTime();
     const fiveDays = 5 * 24 * 60 * 60 * 1000;
     if (ms >= fiveDays) {
-      // local date string without time
       return d.toLocaleDateString();
     }
-    // timeAgo expects unix seconds
     return timeAgo(Math.floor(d.getTime() / 1000));
   }
 </script>
 
 <div class="block bg-[var(--color-background-card)] rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden h-full flex flex-col">
   <a href={bookmark.url} target="_blank" rel="noopener noreferrer" class="block group flex-grow">
-    <div class="aspect-video overflow-hidden hidden md:block">
-      <img src={imageUrl} alt={bookmark.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out">
+    <div class="aspect-video overflow-hidden relative">
+      {#if imageLoaded}
+        <img
+          src={imageUrl}
+          alt={bookmark.title}
+          loading="lazy"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+          transition:fade={{ duration: wasInitiallyLoaded ? 0 : 300 }}
+        />
+      {:else}
+        <div class="skeleton-shimmer w-full h-full"></div>
+      {/if}
     </div>
     <div class="p-5">
       <h3 class="text-xl font-bold text-[var(--color-primary-text)] mb-1 group-hover:text-[var(--color-primary-accent)] transition-colors">{bookmark.title}</h3>

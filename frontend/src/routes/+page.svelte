@@ -17,27 +17,27 @@
   <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
     {#if data.stories && data.stories.length > 0}
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 mb-12 items-start">
-        <div class="lg:col-span-3">
+        <section class="lg:col-span-3" aria-labelledby="hero-story-title">
           <HeroStory story={heroStory} />
-        </div>
-        <div class="lg:col-span-2 bg-[var(--color-background-dark-sections)] p-6 rounded-lg">
+        </section>
+        <aside class="lg:col-span-2 bg-[var(--color-background-dark-sections)] p-6 rounded-lg">
           <h2 class="text-2xl font-bold mb-5 text-[var(--color-primary-text)] border-b-4 border-[var(--color-primary-accent)] pb-3">More Top Stories</h2>
           <div class="space-y-5">
-            {#each secondaryStories as story}
+            {#each secondaryStories as story (story.id)}
               <SecondaryStory {story} />
             {/each}
           </div>
-        </div>
+        </aside>
       </div>
       
-      <div>
-        <h2 class="text-3xl font-bold mb-6 text-[var(--color-primary-text)] border-b-4 border-[var(--color-secondary-accent)] pb-3">All Stories</h2>
+      <section aria-labelledby="all-stories-title">
+        <h2 id="all-stories-title" class="text-3xl font-bold mb-6 text-[var(--color-primary-text)] border-b-4 border-[var(--color-secondary-accent)] pb-3">All Stories</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
-          {#each remainingStories as story}
+          {#each remainingStories as story (story.id)}
             <StoryListItem {story} />
           {/each}
         </div>
-      </div>
+      </section>
     {:else}
       <div class="flex justify-center items-center h-96">
         <p class="text-2xl text-[var(--color-secondary-text)]">Loading stories...</p>

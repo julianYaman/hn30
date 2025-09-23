@@ -49,28 +49,22 @@ export function getDomain(url) {
  * @param {number} unixTimestamp The unix timestamp.
  * @returns {string} A human-readable time ago string.
  */
-export function timeAgo(unixTimestamp) {
-  if (!unixTimestamp) return '';
-  const seconds = Math.floor((new Date() - new Date(unixTimestamp * 1000)) / 1000);
+export function timeAgo(ts) {
+  const seconds = Math.floor((new Date() - new Date(ts * 1000)) / 1000);
   let interval = seconds / 31536000;
-  if (interval > 1) {
-    return Math.floor(interval) + " years ago";
-  }
+  if (interval > 1) return Math.floor(interval) + " years ago";
   interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months ago";
-  }
+  if (interval > 1) return Math.floor(interval) + " months ago";
   interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days ago";
-  }
+  if (interval > 1) return Math.floor(interval) + " days ago";
   interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours ago";
-  }
+  if (interval > 1) return Math.floor(interval) + " hours ago";
   interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes ago";
-  }
+  if (interval > 1) return Math.floor(interval) + " minutes ago";
   return Math.floor(seconds) + " seconds ago";
+}
+
+export function proxyImageUrl(url) {
+  if (!url) return '';
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 }

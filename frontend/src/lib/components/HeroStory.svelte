@@ -1,10 +1,15 @@
 <script>
-  import { generatePlaceholder, getDomain, timeAgo } from '$lib/utils.js';
+  import { generatePlaceholder, getDomain, timeAgo, proxyImageUrl } from '$lib/utils.js';
   import { bookmarks, toggleBookmark } from '$lib/stores/bookmarks.js';
   import { getSummary } from '$lib/api.js';
+  import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import { imageCache } from '$lib/stores/imageCache.js';
+
   export let story;
 
-  $: imageUrl = story.ogImage || generatePlaceholder(story.title, 800, 400);
+  const placeholderUrl = generatePlaceholder(story.title, 800, 400);
+  $: imageUrl = proxyImageUrl(story.ogImage) || placeholderUrl;
   $: domain = getDomain(story.url);
   $: isBookmarked = $bookmarks.some(b => b.id === story.id);
 
@@ -12,6 +17,35 @@
   let isSummaryVisible = false;
   let isLoadingSummary = false;
   let error = null;
+
+  const wasInitiallyLoaded = $imageCache.has(imageUrl);
+  let imageLoaded = wasInitiallyLoaded;
+
+  onMount(() => {
+    if (imageLoaded) return;
+
+    const img = new Image();
+    img.onload = () => {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    };
+    img.onerror = () => {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    };
+    img.src = imageUrl;
+
+    if (img.complete) {
+      imageCache.add(imageUrl);
+      imageLoaded = true;
+    }
+  });
+
+  function handleImageError(e) {
+    if (e.target.src !== placeholderUrl) {
+      e.target.src = placeholderUrl;
+    }
+  }
 
   async function handleSummaryToggle() {
     if (summary || error) {
@@ -41,8 +75,19 @@
     <span>Today's Top Story</span>
   </div>
   <a href={story.url} target="_blank" rel="noopener noreferrer" class="block group">
-    <div class="aspect-video overflow-hidden">
-      <img src={imageUrl} alt={`Image for ${story.title}`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out">
+    <div class="aspect-video overflow-hidden relative">
+      {#if imageLoaded}
+        <img
+          src={imageUrl}
+          alt={`Image for ${story.title}`}
+          on:error={handleImageError}
+          loading="lazy"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+          transition:fade={{ duration: wasInitiallyLoaded ? 0 : 300 }}
+        />
+      {:else}
+        <div class="skeleton-shimmer w-full h-full"></div>
+      {/if}
     </div>
     <div class="p-6">
   <h2 class="text-3xl font-extrabold mb-2 leading-tight text-[var(--color-primary-text)] group-hover:text-[var(--color-primary-accent)] transition-colors">{story.title}</h2>
@@ -50,7 +95,7 @@
           <p class="text-md font-medium text-[var(--color-secondary-text)] mb-4">{domain}</p>
       {/if}
       {#if story.ogDescription}
-        <p class="text-base mb-5 text-[var(--color-secondary-text)] max-w-3xl line-clamp-3">{story.ogDescription}</p>
+        <p class="text-base mb-5 text-[var(--color-secondary-text)] max-w-3xl line-clamp-3 leading-relaxed">{story.ogDescription}</p>
       {/if}
     </div>
   </a>
@@ -107,3 +152,35 @@
     </div>
   </div>
 </div>
+
+<style>
+  .skeleton-shimmer {
+    position: relative;
+    background-color: #e2e8f0; /* slate-200 */
+    overflow: hidden;
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+</style>

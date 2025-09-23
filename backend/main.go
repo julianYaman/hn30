@@ -146,6 +146,7 @@ func main() {
 
 	http.Handle("/api/top", LoggingMiddleware(http.HandlerFunc(topStoriesHandler)))
 	http.Handle("/api/summarize", LoggingMiddleware(rateLimitMiddleware(http.HandlerFunc(summarizeHandler))))
+	http.Handle("/api/image-proxy", LoggingMiddleware(http.HandlerFunc(imageProxyHandler)))
 
 	go func() {
 		LogInfo("Server starting on :8080")
