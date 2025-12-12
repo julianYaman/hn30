@@ -39,7 +39,7 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 	// 3. If summary already exists, return it immediately
 	if story.Summary != "" {
 		LogComponent("CACHE", "Returning cached summary for story %d", id)
-		json.NewEncoder(w).Encode(map[string]string{"summary": story.Summary})
+		json.NewEncoder(w).Encode(map[string]string{"summary": story.Summary, "model": story.SummaryModel})
 		return
 	}
 
@@ -55,16 +55,17 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 	summary, err := generateSummary(articleText)
 	if err != nil {
 		LogError("Failed to generate summary for story %d: %v", id, err)
-		http.Error(w, "Failed to generate summary", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// 5. Save the new summary and article text to the cache
-	story.Summary = summary
+	story.Summary = summary.Summary
 	story.ArticleText = articleText
+	story.SummaryModel = summary.Model
 	storyCache.Set(id, story)
 	LogComponent("CACHE", "Saved new summary for story %d to cache", id)
 
 	// 6. Return the new summary
-	json.NewEncoder(w).Encode(map[string]string{"summary": summary})
+	json.NewEncoder(w).Encode(map[string]string{"summary": summary.Summary, "model": summary.Model})
 }

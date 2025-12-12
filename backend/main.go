@@ -28,6 +28,7 @@ type EnrichedStory struct {
 	OGDescription string `json:"ogDescription"`
 	Summary       string `json:"summary,omitempty"`
 	ArticleText   string `json:"-"` // Don't send full text to client
+	SummaryModel  string `json:"model,omitempty"`
 }
 
 const (

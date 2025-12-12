@@ -13,6 +13,6 @@ export async function getSummary(storyId) {
     return await res.json();
   } else {
     const errorText = await res.text();
-    throw new Error(`Failed to fetch summary: ${errorText}`);
+    throw new Error(`An error occurred: ${errorText}`);
   }
 }
