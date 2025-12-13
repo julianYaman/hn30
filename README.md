@@ -39,13 +39,29 @@ A script is provided to run both the backend and frontend concurrently.
 **Setup:**
 
 1.  **Environment:**
-    The backend requires a Gemini API key  to generate summaries and the frontend requires the base API url. Create a file named `.env.development` in the `/` directory:
+    The backend requires an OpenRouter API key to generate summaries and the frontend requires the base API url. Create a file named `.env.development` in the `/` directory:
     ```env
     # /.env.development
     OPENROUTER_API_KEY=your_openrouter_api_key_here
     PRIVATE_API_BASE_URL=http://localhost:8080
     ```
 
+2.  **Adjust the AI model you want to use:**
+    In [`backend/summarizer.go`](https://github.com/julianYaman/hn30/blob/main/backend/summarizer.go), adjust the model used in the `OpenRouterRequest` with your model that you would like to use.
+    ```go
+    body := OpenRouterRequest{
+  		Model: "<your model>",
+  		Messages: []OpenRouterMessage{
+  			{
+  				Role:    "user",
+  				Content: articleText,
+  			},
+  		},
+	  }
+    ```   
+
+    For testing purposes, we recommend to use the `:free` models on OpenRouter. In production, we recommend using presets in which you can adjust the used models later on.
+    
 2.  **Run the development server:**
     Just run the following command in the root directory:
     ```bash
