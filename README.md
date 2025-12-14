@@ -23,7 +23,7 @@ The motivation behind this project was to fully utilize vibe-code tools and expe
 - **Backend:** Go
 - **Frontend:** SvelteKit, TailwindCSS
 - **Reverse Proxy:** Traefik
-- **AI Integration:** OpenRouter API Key
+- **AI Integration:** OpenRouter API
 
 ## 🚀 Running the Project
 

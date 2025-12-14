@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { bookmarksDB } from '$lib/db';
 import { toast } from '$lib/stores/toast';
+import { exportBookmarksToJSON, readJSONFile, validateImportData, downloadFile, generateExportFilename } from '$lib/utils/fileOperations';
 
 
 const createBookmarkStore = () => {
@@ -75,13 +76,100 @@ const createBookmarkStore = () => {
     return currentBookmarks.some(b => b.id === id);
   }
 
+  /**
+   * Export bookmarks to JSON file
+   * @param {Object} options - Export options
+   * @param {string} options.filename - Custom filename (optional)
+   */
+  async function exportBookmarks(options = {}) {
+    try {
+      const currentBookmarks = get({ subscribe });
+      const filename = options.filename || generateExportFilename('json');
+      
+      exportBookmarksToJSON(currentBookmarks, filename);
+      toast.show(`Successfully exported ${currentBookmarks.length} bookmarks`, 'success');
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.show('Failed to export bookmarks', 'error');
+    }
+  }
+
+  /**
+   * Import bookmarks from JSON file
+   * @param {File} file - File to import
+   * @param {Object} options - Import options
+   * @param {boolean} options.skipDuplicates - Skip bookmarks that already exist (default: true)
+   */
+  async function importBookmarks(file, options = {}) {
+    try {
+      const skipDuplicates = options.skipDuplicates !== false; // Default to true
+      
+      // Read and parse the file
+      const importData = await readJSONFile(file);
+      
+      // Validate the data structure
+      const validation = validateImportData(importData);
+      
+      if (!validation.isValid) {
+        throw new Error(`Invalid file format: ${validation.errors.join(', ')}`);
+      }
+      
+      const currentBookmarks = get({ subscribe });
+      const existingIds = new Set(currentBookmarks.map(b => b.id));
+      
+      // Filter bookmarks based on duplicate handling preference
+      let bookmarksToImport = validation.validBookmarks;
+      if (skipDuplicates) {
+        bookmarksToImport = bookmarksToImport.filter(bookmark => !existingIds.has(bookmark.id));
+      }
+      
+      // Batch import valid bookmarks
+      let importedCount = 0;
+      let skippedCount = validation.validBookmarks.length - bookmarksToImport.length;
+      
+      for (const bookmark of bookmarksToImport) {
+        try {
+          await bookmarksDB.put(bookmark);
+          importedCount++;
+        } catch (error) {
+          console.error('Failed to import bookmark:', bookmark.id, error);
+        }
+      }
+      
+      // Update the store with new bookmarks
+      const updatedBookmarks = [...currentBookmarks, ...bookmarksToImport];
+      set(updatedBookmarks);
+      
+      // Show success message
+      let message = `Successfully imported ${importedCount} bookmarks`;
+      if (skippedCount > 0) {
+        message += ` (${skippedCount} skipped as duplicates)`;
+      }
+      toast.show(message, 'success');
+      
+      return {
+        imported: importedCount,
+        skipped: skippedCount,
+        total: validation.validBookmarks.length
+      };
+      
+    } catch (error) {
+      console.error('Import failed:', error);
+      const errorMessage = error.message || 'Failed to import bookmarks';
+      toast.show(errorMessage, 'error');
+      throw error;
+    }
+  }
+
   return {
     subscribe,
     init,
-  toggle,
-  add,
-  remove,
-  isBookmarked,
+    toggle,
+    add,
+    remove,
+    isBookmarked,
+    exportBookmarks,
+    importBookmarks,
   };
 };
 
