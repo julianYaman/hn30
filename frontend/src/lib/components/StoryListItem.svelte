@@ -103,7 +103,7 @@
         {error}
         {isLoadingSummary}
         textSize="sm"
-        padding="3"
+        padding="4"
         borderWidth="4"
         variant="list"
       />
