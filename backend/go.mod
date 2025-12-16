@@ -3,7 +3,7 @@ module hn-news-page/backend
 go 1.24.0
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.3
+	github.com/PuerkitoBio/goquery v1.11.0
 	github.com/go-shiori/go-readability v0.0.0-20250217085726-9f5bf5ca7612
 	golang.org/x/time v0.12.0
 )
