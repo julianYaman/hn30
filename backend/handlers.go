@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"hn30/backend/utils"
 	"net/http"
 	"strconv"
 )
@@ -38,23 +39,23 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 3. If summary already exists, return it immediately
 	if story.Summary != "" {
-		LogComponent("CACHE", "Returning cached summary for story %d", id)
+		utils.LogComponent("CACHE", "Returning cached summary for story %d", id)
 		json.NewEncoder(w).Encode(map[string]string{"summary": story.Summary, "model": story.SummaryModel})
 		return
 	}
 
 	// 4. If no summary, generate one
-	LogComponent("SUMMARIZER", "No summary found for story %d, generating...", id)
+	utils.LogComponent("SUMMARIZER", "No summary found for story %d, generating...", id)
 	articleText, err := extractArticleText(story.URL)
 	if err != nil {
-		LogError("Failed to extract article text for story %d: %v", id, err)
+		utils.LogError("Failed to extract article text for story %d: %v", id, err)
 		http.Error(w, "Failed to extract article content", http.StatusInternalServerError)
 		return
 	}
 
 	summary, err := generateSummary(articleText)
 	if err != nil {
-		LogError("Failed to generate summary for story %d: %v", id, err)
+		utils.LogError("Failed to generate summary for story %d: %v", id, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -64,7 +65,7 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 	story.ArticleText = articleText
 	story.SummaryModel = summary.Model
 	storyCache.Set(id, story)
-	LogComponent("CACHE", "Saved new summary for story %d to cache", id)
+	utils.LogComponent("CACHE", "Saved new summary for story %d to cache", id)
 
 	// 6. Return the new summary
 	json.NewEncoder(w).Encode(map[string]string{"summary": summary.Summary, "model": summary.Model})

@@ -1,6 +1,4 @@
 <script>
-  import Header from '../../lib/components/Header.svelte';
-  import Footer from '../../lib/components/Footer.svelte';
   import BookmarkStoryListItem from '../../lib/components/BookmarkStoryListItem.svelte';
   import { bookmarks } from '$lib/stores/bookmarks.js';
 
@@ -37,8 +35,6 @@
   }
 </script>
 
-<div class="min-h-screen flex flex-col">
-  <Header />
 
   <main class="max-w-7xl mx-auto p-4 flex-grow">
     <h1 class="text-3xl font-bold mb-6 text-[var(--color-primary-text)] border-b-4 border-[var(--color-secondary-accent)] pb-3">Your Bookmarks</h1>
@@ -109,6 +105,3 @@
       </div>
     {/if}
   </main>
-
-  <Footer />
-</div>

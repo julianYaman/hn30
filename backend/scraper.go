@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"hn30/backend/utils"
 	"net/http"
 	"net/url"
 	"time"
@@ -14,11 +15,11 @@ var scraperClient = &http.Client{
 }
 
 func getOGData(storyUrl string) (string, string, error) {
-	LogComponent("SCRAPER", "Scraping %s for OG data", storyUrl)
+	utils.LogComponent("SCRAPER", "Scraping %s for OG data", storyUrl)
 	// Use an explicit request so we can set a proper User-Agent.
 	req, err := http.NewRequest("GET", storyUrl, nil)
 	if err != nil {
-		LogWarn("Failed to create request for %s: %v", storyUrl, err)
+		utils.LogWarn("Failed to create request for %s: %v", storyUrl, err)
 		return "", "", err
 	}
 
@@ -28,13 +29,13 @@ func getOGData(storyUrl string) (string, string, error) {
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		LogWarn("Failed to fetch URL %s: %v", storyUrl, err)
+		utils.LogWarn("Failed to fetch URL %s: %v", storyUrl, err)
 		return "", "", err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		LogWarn("Scraping %s returned non-200 status: %d", storyUrl, res.StatusCode)
+		utils.LogWarn("Scraping %s returned non-200 status: %d", storyUrl, res.StatusCode)
 		return "", "", fmt.Errorf("bad status: %s", res.Status)
 	}
 
@@ -56,9 +57,9 @@ func getOGData(storyUrl string) (string, string, error) {
 	}
 
 	if ogImage != "" || ogDescription != "" {
-		LogComponent("SCRAPER", "Successfully scraped OG data from %s", storyUrl)
+		utils.LogComponent("SCRAPER", "Successfully scraped OG data from %s", storyUrl)
 	} else {
-		LogComponent("SCRAPER", "No OG data found on %s", storyUrl)
+		utils.LogComponent("SCRAPER", "No OG data found on %s", storyUrl)
 	}
 
 	return ogImage, ogDescription, nil

@@ -63,8 +63,3 @@ export function timeAgo(ts) {
   if (interval > 1) return Math.floor(interval) + " minutes ago";
   return Math.floor(seconds) + " seconds ago";
 }
-
-export function proxyImageUrl(url) {
-  if (!url) return '';
-  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
-}

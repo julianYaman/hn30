@@ -1,8 +1,3 @@
-<script>
-  import Header from '$lib/components/Header.svelte';
-  import Footer from '$lib/components/Footer.svelte';
-</script>
-
 <svelte:head>
     <title>Privacy Policy - hn30</title>
     <meta name="description" content="Learn how hn30 protects your privacy. We collect minimal data to provide our service and do not track you." />
@@ -12,13 +7,10 @@
     <meta property="og:url" content="https://hn.yamanlabs.com/privacy" />
 </svelte:head>
 
-<div class="min-h-screen flex flex-col">
-  <Header />
-
   <main class="flex-grow">
     <div class="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <h1 class="text-4xl font-extrabold mb-2 text-[var(--color-primary-text)]">Privacy Policy</h1>
-        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: September 23, 2025</p>
+        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: January 5, 2026</p>
 
         <div class="space-y-6 text-[var(--color-secondary-text)] leading-relaxed">
             <section>
@@ -62,14 +54,45 @@
                     <li>Your bookmarked stories</li>
                 </ul>
                 <p class="mt-2">This data is stored only on your device and is never sent to our servers. Clearing your browser data will remove it.</p>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">4. Push Notifications (OneSignal)</h3>
+                <p>
+                    If you enable push notifications, we use <a href="https://onesignal.com/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">OneSignal</a> to send you notifications about top stories. OneSignal may use cookies and similar technologies to:
+                </p>
+                <ul class="list-disc list-inside pl-4 space-y-1">
+                    <li>Store a unique identifier to recognize your device</li>
+                    <li>Deliver and measure the effectiveness of notifications</li>
+                    <li>Enable opt-in and opt-out functionality</li>
+                </ul>
+                <p class="mt-2">
+                    <strong class="font-semibold text-[var(--color-primary-text)]">Important:</strong> Push notifications are only enabled after you explicitly opt-in through the Settings modal. We do not send any push notifications until you have accepted the cookie notice and enabled notifications in your settings.
+                </p>
+                <p class="mt-2">
+                    You can disable push notifications at any time by toggling them off in the Settings modal or by using your browser's notification settings.
+                </p>
             </section>
 
             <section>
                 <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">How We Handle Third-Party Services</h2>
                 <ul class="list-disc list-inside pl-4 space-y-2">
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (Google Gemini):</strong> When you request an AI summary, the content of the article is sent to the Google Gemini API. We do not send any personal information about you to Google.</li>
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Image Proxy:</strong> To protect your privacy from third-party sites, all article images are routed through our backend proxy. This prevents websites from seeing your IP address or using tracking cookies when images are loaded.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (OpenRouter):</strong> When you request an AI summary, the content of the article is sent to the OpenRouter API, which routes requests to various AI models. We do not send any personal information about you to OpenRouter or the underlying AI providers.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications (OneSignal):</strong> OneSignal is only loaded and initialized after you accept the cookie notice. Your device token is sent to OneSignal's servers to deliver push notifications. We do not share any other personal data with OneSignal.</li>
                 </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">Cookie Consent</h2>
+                <p>
+                    We use a minimal approach to cookies. Upon your first visit, you will see a cookie notice explaining our privacy practices:
+                </p>
+                <ul class="list-disc list-inside pl-4 space-y-1 mt-2">
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Analytics:</strong> Plausible Analytics (cookie-free) is used for site statistics.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications:</strong> OneSignal is only loaded after you accept the cookie notice.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Local Storage:</strong> Your preferences are stored locally on your device.</li>
+                </ul>
+                <p class="mt-2">
+                    By clicking "Accept" on the cookie notice, you acknowledge that you have read and understood this Privacy Policy.
+                </p>
             </section>
 
             <section>
@@ -89,6 +112,3 @@
         </div>
     </div>
   </main>
-
-  <Footer />
-</div>

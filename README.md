@@ -33,18 +33,26 @@ This method is best for active development, as it provides hot-reloading for the
 A script is provided to run both the backend and frontend concurrently.
 
 **Prerequisites:**
-- Go (1.23+)
+- Go (1.24+)
 - Node.js (18+)
 
 **Setup:**
 
-1.  **Environment:**
-    The backend requires an OpenRouter API key to generate summaries and the frontend requires the base API url. Create a file named `.env.development` in the `/` directory:
+1.  **Environment Variables:**
+    
+    **Backend:** Create `.env.development` in the root directory:
     ```env
     # /.env.development
     OPENROUTER_API_KEY=your_openrouter_api_key_here
     PRIVATE_API_BASE_URL=http://localhost:8080
     ```
+    
+    **Frontend:** Create `.env` in the `/frontend` directory (copy from `.env.example`):
+    ```bash
+    cd frontend
+    cp .env.example .env
+    ```
+    Edit the values as needed. For local development, defaults should work.
 
 2.  **Adjust the AI model you want to use:**
     In [`backend/summarizer.go`](https://github.com/julianYaman/hn30/blob/main/backend/summarizer.go), adjust the model used in the `OpenRouterRequest` with your model that you would like to use.

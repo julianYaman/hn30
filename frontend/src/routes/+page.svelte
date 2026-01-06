@@ -1,6 +1,4 @@
 <script>
-  import Header from '../lib/components/Header.svelte';
-  import Footer from '../lib/components/Footer.svelte';
   import HeroStory from '../lib/components/HeroStory.svelte';
   import SecondaryStory from '../lib/components/SecondaryStory.svelte';
   import StoryListItem from '../lib/components/StoryListItem.svelte';
@@ -10,9 +8,6 @@
   $: secondaryStories = data.stories?.slice(1, 5);
   $: remainingStories = data.stories?.slice(5);
 </script>
-
-<div class="min-h-screen flex flex-col">
-  <Header />
 
   <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
     {#if data.stories && data.stories.length > 0}
@@ -44,6 +39,3 @@
       </div>
     {/if}
   </main>
-
-  <Footer />
-</div>

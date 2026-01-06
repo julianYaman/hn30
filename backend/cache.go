@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hn30/backend/utils"
 	"sync"
 	"time"
 )
@@ -35,6 +36,21 @@ func (c *Cache) Get(id int) (EnrichedStory, bool) {
 func (c *Cache) SetStoryIDs(ids []int) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
+	// Create a map for quick lookup of new story IDs
+	newIDs := make(map[int]bool)
+	for _, id := range ids {
+		newIDs[id] = true
+	}
+
+	// Remove stories that are no longer in the top 30
+	for id := range c.stories {
+		if !newIDs[id] {
+			utils.LogComponent("CACHE", "Removing story ID %d from cache", id)
+			delete(c.stories, id)
+		}
+	}
+
 	c.storyIDs = ids
 }
 
@@ -43,9 +59,12 @@ func (c *Cache) GetAll() []EnrichedStory {
 	defer c.mu.RUnlock()
 	stories := make([]EnrichedStory, 0, len(c.storyIDs))
 	for _, id := range c.storyIDs {
-		if story, found := c.stories[id]; found {
-			stories = append(stories, story)
+		story, found := c.stories[id]
+		if !found {
+			utils.LogComponent("CACHE", "Story ID %d not found in cache", id)
+			continue
 		}
+		stories = append(stories, story)
 	}
 	return stories
 }

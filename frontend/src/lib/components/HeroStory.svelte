@@ -1,5 +1,5 @@
 <script>
-  import { generatePlaceholder, getDomain, proxyImageUrl } from '$lib/utils.js';
+  import { generatePlaceholder, getDomain } from '$lib/utils.js';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { imageCache } from '$lib/stores/imageCache.js';
@@ -10,7 +10,7 @@
 
   // Initialize all reactive values at module scope for SSR compatibility
   const placeholderUrl = story ? generatePlaceholder(story.title, 800, 400) : '';
-  $: imageUrl = story ? (proxyImageUrl(story.ogImage) || placeholderUrl) : '';
+  $: imageUrl = story ? (story.ogImage || placeholderUrl) : '';
   $: domain = story ? getDomain(story.url) : '';
 
   // Summary state - initialize with defaults for SSR
@@ -138,35 +138,3 @@
   />
 </div>
 {/if}
-
-<style>
-  .skeleton-shimmer {
-    position: relative;
-    background-color: #e2e8f0;
-    overflow: hidden;
-  }
-
-  .skeleton-shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-    background-image: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0,
-      rgba(255, 255, 255, 0.2) 20%,
-      rgba(255, 255, 255, 0.5) 60%,
-      rgba(255, 255, 255, 0)
-    );
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
-  }
-</style>

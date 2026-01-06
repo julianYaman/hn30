@@ -1,0 +1,10 @@
+# Ignore build artifacts and dependencies
+build/
+.svelte-kit/
+dist/
+node_modules/
+package-lock.json
+
+# Ignore generated files
+.DS_Store
+*.log

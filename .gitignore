@@ -4,8 +4,9 @@
 !.env.example
 
 # Backend
-/backend/backend
-/backend/api-hn-news
+/backend/data/hn30.db
+/backend/data/hn30.db-shm
+/backend/data/hn30.db-wal
 
 # Frontend
 /frontend/node_modules
@@ -13,6 +14,16 @@
 /frontend/build
 /frontend/dist
 /frontend/.env
+/frontend/.env.*
+!/frontend/.env.example
+/frontend/package-lock.json
 
 # OS-specific
 .DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

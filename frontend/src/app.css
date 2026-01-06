@@ -31,3 +31,59 @@
 
   
 }
+
+/* Custom scrollbar for dark mode compatibility */
+:global(body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+:global(body)::-webkit-scrollbar {
+  width: 6px;
+}
+
+:global(body)::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:global(body)::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 3px;
+}
+
+:global(body)::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-tertiary-text);
+}
+
+/* Shimmer loading animation */
+.skeleton-shimmer {
+  position: relative;
+  background-color: #e2e8f0;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

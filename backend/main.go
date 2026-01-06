@@ -2,28 +2,24 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"hn30/backend/db"
+	"hn30/backend/types"
+	"hn30/backend/utils"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/OneSignal/onesignal-go-api/v5"
 )
 
-type Story struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	URL         string `json:"url"`
-	Score       int    `json:"score"`
-	By          string `json:"by"`
-	Time        int64  `json:"time"`
-	Descendants int    `json:"descendants"`
-}
-
 type EnrichedStory struct {
-	Story
+	types.Story
 	OGImage       string `json:"ogImage"`
 	OGDescription string `json:"ogDescription"`
 	Summary       string `json:"summary,omitempty"`
@@ -37,9 +33,13 @@ const (
 )
 
 var storyCache *Cache
+var dbConn *sql.DB
+
+var oneSignalConfig = onesignal.NewConfiguration()
+var oneSignalApiClient = onesignal.NewAPIClient(oneSignalConfig)
 
 func getTopStoryIDs() ([]int, error) {
-	LogComponent("HN_API", "Fetching top story IDs")
+	utils.LogComponent("HN_API", "Fetching top story IDs")
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/topstories.json", hnBaseURL), nil)
 	if err != nil {
 		return nil, err
@@ -56,19 +56,19 @@ func getTopStoryIDs() ([]int, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&ids); err != nil {
 		return nil, err
 	}
-	LogComponent("HN_API", "Successfully fetched %d top story IDs", len(ids))
+	utils.LogComponent("HN_API", "Successfully fetched %d top story IDs", len(ids))
 	return ids, nil
 }
 
-func getStoryDetails(id int) (*Story, error) {
-	LogComponent("HN_API", "Fetching details for story %d", id)
+func getStoryDetails(id int) (*types.Story, error) {
+	utils.LogComponent("HN_API", "Fetching details for story %d", id)
 	resp, err := http.Get(fmt.Sprintf("%s/item/%d.json", hnBaseURL, id))
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var story Story
+	var story types.Story
 	if err := json.NewDecoder(resp.Body).Decode(&story); err != nil {
 		return nil, err
 	}
@@ -76,10 +76,10 @@ func getStoryDetails(id int) (*Story, error) {
 }
 
 func refreshCache() {
-	LogComponent("CACHE", "Starting cache refresh cycle")
+	utils.LogComponent("CACHE", "Starting cache refresh cycle")
 	ids, err := getTopStoryIDs()
 	if err != nil {
-		LogError("Failed to get top story IDs: %v", err)
+		utils.LogError("Failed to get top story IDs: %v", err)
 		return
 	}
 
@@ -92,19 +92,19 @@ func refreshCache() {
 	for _, id := range topIDs {
 		story, err := getStoryDetails(id)
 		if err != nil {
-			LogWarn("Failed to get story details for ID %d: %v", id, err)
+			utils.LogWarn("Failed to get story details for ID %d: %v", id, err)
 			continue
 		}
 
 		if story.URL == "" {
 			// If the story has no external URL, use the Hacker News item page as the URL
-			LogInfo("Story %d has no URL; using HN item page as URL", id)
+			utils.LogInfo("Story %d has no URL; using HN item page as URL", id)
 			story.URL = fmt.Sprintf("https://news.ycombinator.com/item?id=%d", id)
 			// Fall through and attempt to fetch OG data for the HN item page
 		}
 
 		if existingStory, found := storyCache.Get(id); found && existingStory.URL == story.URL {
-			LogInfo("Story %d already in cache and URL unchanged, reusing OG data and updating stats", id)
+			utils.LogInfo("Story %d already in cache and URL unchanged, reusing OG data and updating stats", id)
 			existingStory.Score = story.Score
 			existingStory.Descendants = story.Descendants
 			storyCache.Set(id, existingStory)
@@ -113,7 +113,7 @@ func refreshCache() {
 
 		ogImage, ogDescription, err := getOGData(story.URL)
 		if err != nil {
-			LogWarn("Failed to get OG data for URL %s: %v", story.URL, err)
+			utils.LogWarn("Failed to get OG data for URL %s: %v", story.URL, err)
 		}
 
 		enrichedStory := EnrichedStory{
@@ -121,11 +121,62 @@ func refreshCache() {
 			OGImage:       ogImage,
 			OGDescription: ogDescription,
 		}
+
+		dbErr := db.UpsertStory(dbConn, *story)
+		if dbErr != nil {
+			utils.LogError("Failed to upsert story %d into database: %v", id, dbErr)
+		}
+
+		if db.ShouldNotify(dbConn, *story) {
+			go sendNotification(enrichedStory)
+			db.MarkNotified(dbConn, story.ID)
+		}
+
 		storyCache.Set(id, enrichedStory)
 		time.Sleep(500 * time.Millisecond) // Rate limit scraping
 	}
 	storyCache.SetLastUpdated(time.Now())
-	LogComponent("CACHE", "Cache refresh cycle complete")
+	utils.LogComponent("CACHE", "Cache refresh cycle complete")
+}
+
+func sendNotification(story EnrichedStory) {
+
+	appId := os.Getenv("ONESIGNAL_APP_ID")
+	restApiKey := os.Getenv("ONESIGNAL_KEY")
+
+	utils.LogComponent("NOTIFICATION", "Sending notification for story %d", story.ID)
+
+	osAuthCtx := context.WithValue(
+		context.Background(),
+		onesignal.RestApiKey,
+		restApiKey)
+
+	notification := *onesignal.NewNotification(appId)
+
+	notification.SetUrl(story.URL + "?ref=hn30")
+
+	content := onesignal.NewLanguageStringMap()
+	content.SetEn(story.Title)
+	notification.SetContents(*content)
+
+	notification.SetIncludedSegments([]string{"Total Subscriptions"})
+
+	headings := onesignal.NewLanguageStringMap()
+	headings.SetEn("Top Story on Hacker News")
+	notification.SetHeadings(*headings)
+
+	// resp, r, err
+	resp, _, err := oneSignalApiClient.DefaultApi.CreateNotification(osAuthCtx).Notification(notification).Execute()
+
+	if err != nil {
+		utils.LogError("Error: %v\n", err)
+		return
+	}
+
+	fmt.Println("Response JSON:", resp)
+
+	utils.LogComponent("NOTIFICATION", "Broadcast sent! ID: %v", resp.GetId())
+
 }
 
 func startCacheRefresher() {
@@ -141,16 +192,18 @@ func startCacheRefresher() {
 
 func main() {
 	log.SetFlags(0)
+
+	dbConn = db.Open(os.Getenv("SQLITE_PATH"))
 	startCacheRefresher()
 
 	server := &http.Server{Addr: ":8080"}
 
-	http.Handle("/api/top", LoggingMiddleware(http.HandlerFunc(topStoriesHandler)))
-	http.Handle("/api/summarize", LoggingMiddleware(rateLimitMiddleware(http.HandlerFunc(summarizeHandler))))
-	http.Handle("/api/image-proxy", LoggingMiddleware(http.HandlerFunc(imageProxyHandler)))
+	http.Handle("/api/top", utils.LoggingMiddleware(http.HandlerFunc(topStoriesHandler)))
+	http.Handle("/api/summarize", utils.LoggingMiddleware(rateLimitMiddleware(http.HandlerFunc(summarizeHandler))))
+	http.Handle("/api/image-proxy", utils.LoggingMiddleware(http.HandlerFunc(imageProxyHandler)))
 
 	go func() {
-		LogInfo("Server starting on :8080")
+		utils.LogInfo("Server starting on :8080")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("could not listen on port 8080 %v", err)
 		}
@@ -161,7 +214,7 @@ func main() {
 
 	<-stop
 
-	LogInfo("Shutting down server...")
+	utils.LogInfo("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -170,5 +223,5 @@ func main() {
 		log.Fatalf("Server shutdown failed: %v", err)
 	}
 
-	LogInfo("Server gracefully stopped")
+	utils.LogInfo("Server gracefully stopped")
 }

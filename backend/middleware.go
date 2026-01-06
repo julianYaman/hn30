@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hn30/backend/utils"
 	"net/http"
 	"sync"
 	"time"
@@ -24,7 +25,7 @@ func rateLimitMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Log every request attempt to the summarize endpoint
-		LogComponent("RATE_LIMITER", "Request received for %s from IP: %s", r.URL.Path, ip)
+		utils.LogComponent("RATE_LIMITER", "Request received for %s from IP: %s", r.URL.Path, ip)
 
 		mu.Lock()
 		// Check if the visitor has a limiter yet
@@ -36,7 +37,7 @@ func rateLimitMiddleware(next http.Handler) http.Handler {
 
 		// If the visitor's limiter doesn't allow the request, block them.
 		if !visitors[ip].Allow() {
-			LogWarn("Rate limit exceeded for IP: %s", ip)
+			utils.LogWarn("Rate limit exceeded for IP: %s", ip)
 			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
 			return
 		}
