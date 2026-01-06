@@ -2,8 +2,6 @@ package utils
 
 import (
 	"log"
-	"net/http"
-	"time"
 )
 
 const (
@@ -14,6 +12,9 @@ const (
 	ColorBlue   = "\033[34m"
 	ColorCyan   = "\033[36m"
 )
+
+// Legacy logging functions - kept for backwards compatibility
+// Consider migrating to structured logging (slog) for new code
 
 func LogInfo(format string, v ...interface{}) {
 	log.Printf(ColorGreen+"[INFO]"+ColorReset+" "+format, v...)
@@ -29,38 +30,4 @@ func LogError(format string, v ...interface{}) {
 
 func LogComponent(component, format string, v ...interface{}) {
 	log.Printf(ColorCyan+"[%s]"+ColorReset+" "+format, append([]interface{}{component}, v...)...)
-}
-
-type loggingResponseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func newLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
-	return &loggingResponseWriter{w, http.StatusOK}
-}
-
-func (lrw *loggingResponseWriter) WriteHeader(code int) {
-	lrw.statusCode = code
-	lrw.ResponseWriter.WriteHeader(code)
-}
-
-func LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		lrw := newLoggingResponseWriter(w)
-
-		next.ServeHTTP(lrw, r)
-
-		duration := time.Since(start)
-		statusCode := lrw.statusCode
-		statusColor := ColorGreen
-		if statusCode >= 400 && statusCode < 500 {
-			statusColor = ColorYellow
-		} else if statusCode >= 500 {
-			statusColor = ColorRed
-		}
-
-		LogComponent("HTTP", "%s %s %s%d%s %v", r.Method, r.URL.Path, statusColor, statusCode, ColorReset, duration)
-	})
 }
