@@ -44,7 +44,7 @@
         // Initialize OneSignal if not already done
         if (!OneSignal.initialized) {
           await OneSignal.init({
-            appId: 'f86971bd-cd8f-418a-8c18-906803c91b99',
+            appId: 'd87f86d2-2b50-49fd-83b0-c5c9a533776f',
             allowLocalhostAsSecureOrigin: true,
           });
         }
