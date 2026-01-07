@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -313,8 +314,15 @@ func refreshCache() {
 }
 
 func sendNotification(story EnrichedStory) {
+
+	ctx := context.Background()
+
+	jobID := uuid.NewString()
+	ctx = context.WithValue(ctx, "job_id", jobID)
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
 		"event_type", "push_notification",
+		"job_id", jobID,
 		"story_id", story.ID,
 		"story_title", story.Title,
 		"story_url", story.URL,
@@ -356,6 +364,9 @@ func sendNotification(story EnrichedStory) {
 	headings := onesignal.NewLanguageStringMap()
 	headings.SetEn("Top Story on Hacker News")
 	notification.SetHeadings(*headings)
+
+	notification.SetWebPushTopic("hn30_notifications-" + strconv.Itoa(story.ID)) // prevent overriding
+	notification.SetPriority(10)                                                 // for iOS
 
 	logger.Info("notification payload prepared",
 		"event", "payload_prepared",
