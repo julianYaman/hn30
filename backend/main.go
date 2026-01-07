@@ -32,7 +32,7 @@ type EnrichedStory struct {
 
 const (
 	hnBaseURL       = "https://hacker-news.firebaseio.com/v0"
-	customUserAgent = "yamanlabs-hn/1.0 (+https://hn.yamanlabs.com)"
+	customUserAgent = "yamanlabs-hn/2.0 (+https://hn30.yamanlabs.com)"
 )
 
 var storyCache *Cache

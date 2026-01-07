@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,21 +14,7 @@ import (
 )
 
 var scraperClient = &http.Client{
-	Timeout: 10 * time.Second, // Reduced from 30s to fail faster
-	Transport: &http.Transport{
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 10,
-		IdleConnTimeout:     90 * time.Second,
-		DisableCompression:  false,
-		// Timeout settings to prevent hanging
-		DialContext: (&net.Dialer{
-			Timeout:   5 * time.Second,
-			KeepAlive: 30 * time.Second,
-		}).DialContext,
-		TLSHandshakeTimeout:   5 * time.Second,
-		ResponseHeaderTimeout: 5 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	},
+	Timeout: 20 * time.Second, // Reduced from 30s to fail faster
 }
 
 func getOGData(storyUrl string) (string, string, error) {
@@ -80,10 +65,6 @@ func getOGData(storyUrl string) (string, string, error) {
 
 	// Be a polite scraper: identify the application and provide a URL.
 	req.Header.Set("User-Agent", customUserAgent)
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
-	// Request only what we need - helps with faster responses
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
 
 	res, err := scraperClient.Do(req)
 	if err != nil {
@@ -170,8 +151,8 @@ func getOGData(storyUrl string) (string, string, error) {
 			"event", "scrape_completed",
 			"has_image", hasImage,
 			"has_description", hasDescription,
-			"image_length", len(ogImage),
-			"description_length", len(ogDescription),
+			"image_url", ogImage,
+			"description", ogDescription,
 			"duration_ms", time.Since(start).Milliseconds(),
 		)
 	} else {
