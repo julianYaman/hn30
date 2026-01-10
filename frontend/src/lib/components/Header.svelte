@@ -1,6 +1,5 @@
 <script>
   import { theme } from '$lib/stores/theme.js';
-  import { bookmarks } from '$lib/stores/bookmarks.js';
   import { notifications } from '$lib/stores/notifications.js';
   import SettingsModal from './SettingsModal.svelte';
   import { fly } from 'svelte/transition';
@@ -10,26 +9,59 @@
   let settingsOpen = false;
   let isMobile = false;
 
+  const navLinks = [
+    {
+      label: 'Blog',
+      href: 'https://yaman.pro/blog',
+      external: true
+    },
+    {
+      label: 'Bookmarks',
+      href: '/bookmarks'
+    }
+  ];
+
+  const MOBILE_BREAKPOINT = '(max-width: 767px)';
+
   function toggleTheme() {
     theme.setTheme($theme === 'light' ? 'dark' : 'light');
+  }
+
+  function closeMenu() {
+    menuOpen = false;
+  }
+
+  // Portal action to render the mobile drawer at <body> level so transforms elsewhere don't affect its position.
+  function portal(node) {
+    const target = typeof document !== 'undefined' ? document.body : null;
+    if (!target) return;
+    target.appendChild(node);
+    return {
+      destroy() {
+        if (node.parentNode === target) {
+          target.removeChild(node);
+        }
+      }
+    };
   }
 
   onMount(() => {
     notifications.initialize();
     
-    const mql = window.matchMedia('(max-width: 767px)');
-    isMobile = mql.matches;
-    const listener = (e) => {
+    const mql = window.matchMedia(MOBILE_BREAKPOINT);
+    const handleChange = (e) => {
       isMobile = e.matches;
       if (!isMobile) {
-        menuOpen = false; // Close menu when switching to desktop view
+        menuOpen = false;
       }
     };
-    mql.addEventListener('change', listener);
-    
+
+    handleChange(mql);
+    mql.addEventListener('change', handleChange);
+
     return () => {
-      mql.removeEventListener('change', listener);
-    }
+      mql.removeEventListener('change', handleChange);
+    };
   });
 </script>
 
@@ -42,23 +74,40 @@
 
     <!-- Desktop Nav -->
     <nav class="hidden md:flex items-center space-x-6">
-      <a href="https://yaman.pro/blog" class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" target="_blank" rel="noopener noreferrer">Blog</a>
-      <a href="/bookmarks" class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" title="Bookmarks">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-        </svg>
-      </a>
+      {#each navLinks as link}
+        <a
+          href={link.href}
+          class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors"
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
+          title={link.label === 'Bookmarks' ? link.label : undefined}
+        >
+          {#if link.label === 'Bookmarks'}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          {:else}
+            {link.label}
+          {/if}
+        </a>
+      {/each}
+
       <button on:click={() => settingsOpen = true} class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" title="Settings">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       </button>
+
       <button on:click={toggleTheme} class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" title="Toggle Theme">
         {#if $theme === 'light'}
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
         {:else}
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
         {/if}
       </button>
     </nav>
@@ -74,25 +123,48 @@
 
 <!-- Mobile Menu Panel -->
 {#if menuOpen && isMobile}
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div transition:fly={{ duration: 200, opacity: 0 }} on:click={() => menuOpen = false} class="fixed inset-0 bg-white/30 backdrop-blur-sm z-30" role="button" tabindex="0"></div>
+  <div use:portal>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div
+      transition:fly={{ duration: 200, opacity: 0 }}
+      on:click={closeMenu}
+      class="fixed inset-0 bg-white/30 backdrop-blur-sm z-30"
+      role="button"
+      tabindex="0"
+    ></div>
 
-  <div transition:fly={{ duration: 300, x: '100%' }} class="fixed top-0 right-0 h-full w-64 bg-[var(--color-background-card)] shadow-lg z-40">
-    <div class="p-5 flex justify-end">
-        <button on:click={() => menuOpen = false} aria-label="Close menu" class="text-[var(--color-primary-text)] p-2 -mr-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div
+      transition:fly={{ duration: 300, x: '100%' }}
+      class="fixed top-0 right-0 h-screen w-64 bg-[var(--color-background-card)] shadow-lg z-40 overflow-y-auto"
+    >
+      <div class="p-5 flex justify-end">
+        <button on:click={closeMenu} aria-label="Close menu" class="text-[var(--color-primary-text)] p-2 -mr-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
         </button>
+      </div>
+      <nav class="flex flex-col text-lg">
+        {#each navLinks as link}
+          <a
+            href={link.href}
+            on:click={closeMenu}
+            class="p-4 hover:bg-[var(--color-background-dark-sections)]"
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noopener noreferrer' : undefined}
+          >
+            {link.label}
+          </a>
+        {/each}
+
+        <button on:click={() => { settingsOpen = true; closeMenu(); }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
+          Settings
+        </button>
+        <button on:click={() => { toggleTheme(); closeMenu(); }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
+          Toggle Theme
+        </button>
+      </nav>
     </div>
-    <nav class="flex flex-col text-lg">
-      <a href="https://yaman.pro/blog" on:click={() => menuOpen = false} class="p-4 hover:bg-[var(--color-background-dark-sections)]" target="_blank" rel="noopener noreferrer">Blog</a>
-      <a href="/bookmarks" on:click={() => menuOpen = false} class="p-4 hover:bg-[var(--color-background-dark-sections)]">Bookmarks</a>
-      <button on:click={() => { settingsOpen = true; menuOpen = false; }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
-        Settings
-      </button>
-      <button on:click={() => { toggleTheme(); menuOpen = false; }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
-        Toggle Theme
-      </button>
-    </nav>
   </div>
 {/if}
 

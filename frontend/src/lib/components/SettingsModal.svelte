@@ -4,6 +4,22 @@
 
   export let isOpen = false;
 
+  // Render modal at <body> level so `position: fixed` stays relative to the viewport
+  // even when ancestors (e.g. pull-to-refresh container) are transformed.
+  function portal(node) {
+    const target = typeof document !== 'undefined' ? document.body : null;
+    if (!target) return;
+    target.appendChild(node);
+
+    return {
+      destroy() {
+        if (node.parentNode === target) {
+          target.removeChild(node);
+        }
+      }
+    };
+  }
+
   const handleToggleNotifications = async (e) => {
     const desiredState = e.target.checked;
 
@@ -22,20 +38,21 @@
 </script>
 
 {#if isOpen}
-  <!-- Backdrop -->
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div transition:fly={{ duration: 200, opacity: 0 }} on:click={closeModal} class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" role="button" tabindex="0"></div>
+  <div use:portal>
+    <!-- Backdrop -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div transition:fly={{ duration: 200, opacity: 0 }} on:click={closeModal} class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" role="button" tabindex="0"></div>
 
-  <!-- Modal -->
-  <div transition:fly={{ duration: 300, y: 50, opacity: 0 }} class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[var(--color-background-card)] rounded-lg shadow-xl z-50 w-96 max-w-full p-6 mx-4">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-[var(--color-primary-text)]">Settings</h2>
-      <button on:click={closeModal} aria-label="Close settings" class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-text)] transition-colors">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
+    <!-- Modal -->
+    <div transition:fly={{ duration: 300, y: 50, opacity: 0 }} class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[var(--color-background-card)] rounded-lg shadow-xl z-50 w-96 max-w-full p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-[var(--color-primary-text)]">Settings</h2>
+        <button on:click={closeModal} aria-label="Close settings" class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-text)] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
 
     <div class="space-y-4">
       <!-- Notifications Preference -->
@@ -105,10 +122,11 @@
       {/if}
     </div>
 
-    <div class="mt-6 flex justify-end">
-      <button on:click={closeModal} class="px-4 py-2 bg-[var(--color-primary-accent)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
-        Done
-      </button>
+      <div class="mt-6 flex justify-end">
+        <button on:click={closeModal} class="px-4 py-2 bg-[var(--color-primary-accent)] text-white rounded-lg hover:opacity-90 transition-opacity font-medium">
+          Done
+        </button>
+      </div>
     </div>
   </div>
 {/if}
