@@ -1,18 +1,28 @@
 <script>
+  import { onMount } from 'svelte';
   import HeroStory from '../lib/components/HeroStory.svelte';
   import SecondaryStory from '../lib/components/SecondaryStory.svelte';
   import StoryListItem from '../lib/components/StoryListItem.svelte';
+  import AddToHomeScreen from '../lib/components/AddToHomeScreen.svelte';
+  import EnableNotifications from '../lib/components/EnableNotifications.svelte';
+  import { recordVisit } from '$lib/utils.js';
   export let data;
 
   $: heroStory = data.stories?.[0];
   $: secondaryStories = data.stories?.slice(1, 5);
   $: remainingStories = data.stories?.slice(5);
+
+  onMount(() => {
+    recordVisit();
+  });
 </script>
 
   <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
     {#if data.stories && data.stories.length > 0}
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 mb-12 items-start">
         <section class="lg:col-span-3" aria-labelledby="hero-story-title">
+          <AddToHomeScreen />
+          <EnableNotifications />
           <HeroStory story={heroStory} />
         </section>
         <aside class="lg:col-span-2 bg-[var(--color-background-dark-sections)] p-6 rounded-lg">

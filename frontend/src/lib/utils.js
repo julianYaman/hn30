@@ -151,3 +151,163 @@ export function isStandaloneMobilePWA() {
   return isInstalledStandalonePWA() && isMobileOrIPad();
 }
 
+// ============================================================================
+// Add to Home Screen (A2HS) utilities
+// ============================================================================
+
+const VISITS_STORAGE_KEY = 'hn30_visits';
+const A2HS_DISMISSED_KEY = 'hn30_a2hs_dismissed';
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+/**
+ * Records the current visit timestamp.
+ * Maintains a rolling window of visits within the last 7 days.
+ */
+export function recordVisit() {
+  if (typeof window === 'undefined') return;
+
+  const now = Date.now();
+  const stored = localStorage.getItem(VISITS_STORAGE_KEY);
+  let visits = stored ? JSON.parse(stored) : [];
+
+  // Filter to only keep visits within the last 7 days
+  visits = visits.filter((ts) => now - ts < SEVEN_DAYS_MS);
+
+  // Add current visit
+  visits.push(now);
+
+  localStorage.setItem(VISITS_STORAGE_KEY, JSON.stringify(visits));
+}
+
+/**
+ * Returns the count of visits within the last 7 days.
+ * @returns {number}
+ */
+export function getRecentVisitCount() {
+  if (typeof window === 'undefined') return 0;
+
+  const stored = localStorage.getItem(VISITS_STORAGE_KEY);
+  if (!stored) return 0;
+
+  const now = Date.now();
+  const visits = JSON.parse(stored);
+  return visits.filter((ts) => now - ts < SEVEN_DAYS_MS).length;
+}
+
+/**
+ * Records when the A2HS prompt was dismissed.
+ */
+export function dismissA2HSPrompt() {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(A2HS_DISMISSED_KEY, Date.now().toString());
+}
+
+/**
+ * Returns true if the A2HS prompt is currently dismissed (within 7-day reminder period).
+ * @returns {boolean}
+ */
+export function isA2HSDismissed() {
+  if (typeof window === 'undefined') return false;
+
+  const dismissed = localStorage.getItem(A2HS_DISMISSED_KEY);
+  if (!dismissed) return false;
+
+  const dismissedAt = parseInt(dismissed, 10);
+  const now = Date.now();
+
+  // If 7 days have passed, it's no longer dismissed
+  return now - dismissedAt < SEVEN_DAYS_MS;
+}
+
+/**
+ * Detects if the device is running iOS (iPhone, iPad, iPod).
+ * @returns {boolean}
+ */
+export function isIOS() {
+  if (typeof window === 'undefined') return false;
+
+  // Check for iOS devices
+  const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  // Also check for iPadOS (reports as Mac but has touch)
+  const isIPadOS =
+    /MacIntel/.test(navigator.platform) && (navigator.maxTouchPoints ?? 0) > 1;
+
+  return isIOSDevice || isIPadOS;
+}
+
+/**
+ * Detects if the device is running Android.
+ * @returns {boolean}
+ */
+export function isAndroid() {
+  if (typeof window === 'undefined') return false;
+  return /Android/.test(navigator.userAgent);
+}
+
+/**
+ * Determines if we should show the A2HS prompt.
+ * Conditions:
+ * - Is on a mobile/tablet device
+ * - Is NOT already installed as a PWA
+ * - Has 3+ visits in the last 7 days
+ * - Is not currently dismissed
+ * @returns {boolean}
+ */
+export function shouldShowA2HSPrompt() {
+  if (typeof window === 'undefined') return false;
+
+  // Must be mobile/tablet
+  if (!isMobileOrIPad()) return false;
+
+  // Must NOT be already installed
+  if (isInstalledStandalonePWA()) return false;
+
+  // Must have 3+ visits in 7 days
+  if (getRecentVisitCount() < 3) return false;
+
+  // Must not be dismissed
+  if (isA2HSDismissed()) return false;
+
+  return true;
+}
+
+// ============================================================================
+// Enable Notifications prompt utilities
+// ============================================================================
+
+const NOTIFICATIONS_PROMPT_DISMISSED_KEY = 'hn30_notifications_prompt_dismissed';
+
+/**
+ * Records when the notifications prompt was dismissed.
+ */
+export function dismissNotificationsPrompt() {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(NOTIFICATIONS_PROMPT_DISMISSED_KEY, Date.now().toString());
+}
+
+/**
+ * Returns true if the notifications prompt is currently dismissed (within 7-day reminder period).
+ * @returns {boolean}
+ */
+export function isNotificationsPromptDismissed() {
+  if (typeof window === 'undefined') return false;
+
+  const dismissed = localStorage.getItem(NOTIFICATIONS_PROMPT_DISMISSED_KEY);
+  if (!dismissed) return false;
+
+  const dismissedAt = parseInt(dismissed, 10);
+  const now = Date.now();
+
+  // If 7 days have passed, it's no longer dismissed
+  return now - dismissedAt < SEVEN_DAYS_MS;
+}
+
+/**
+ * Returns true if cookies have been accepted.
+ * @returns {boolean}
+ */
+export function hasCookiesAccepted() {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem('privacy_accepted') === 'true';
+}

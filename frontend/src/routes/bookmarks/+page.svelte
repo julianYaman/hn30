@@ -1,13 +1,32 @@
 <script>
+  import { onMount } from 'svelte';
   import BookmarkStoryListItem from '../../lib/components/BookmarkStoryListItem.svelte';
+  import BookmarkListItem from '../../lib/components/BookmarkListItem.svelte';
   import { bookmarks } from '$lib/stores/bookmarks.js';
+
+  const VIEW_STORAGE_KEY = 'hn30_bookmarks_view';
 
   let bookmarkedStories = [];
   let isImporting = false;
   let importFileInput;
+  let viewMode = 'card'; // 'card' | 'list'
+
   $: bookmarks.subscribe(bm => {
     bookmarkedStories = bm;
   });
+
+  onMount(() => {
+    // Load saved view preference
+    const savedView = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (savedView === 'card' || savedView === 'list') {
+      viewMode = savedView;
+    }
+  });
+
+  function setViewMode(mode) {
+    viewMode = mode;
+    localStorage.setItem(VIEW_STORAGE_KEY, mode);
+  }
 
   async function handleExport() {
     await bookmarks.exportBookmarks();
@@ -37,7 +56,35 @@
 
 
   <main class="max-w-7xl mx-auto p-4 flex-grow">
-    <h1 class="text-3xl font-bold mb-6 text-[var(--color-primary-text)] border-b-4 border-[var(--color-secondary-accent)] pb-3">Your Bookmarks</h1>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <h1 class="text-3xl font-bold text-[var(--color-primary-text)] border-b-4 border-[var(--color-secondary-accent)] pb-3">Your Bookmarks</h1>
+      
+      <!-- View Toggle -->
+      <div class="flex items-center gap-1 bg-[var(--color-background-dark-sections)] rounded-lg p-1">
+        <button
+          on:click={() => setViewMode('card')}
+          class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors {viewMode === 'card' ? 'bg-[var(--color-background-card)] text-[var(--color-primary-text)] shadow-sm' : 'text-[var(--color-secondary-text)] hover:text-[var(--color-primary-text)]'}"
+          aria-label="Card view"
+          aria-pressed={viewMode === 'card'}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          <span class="hidden sm:inline">Cards</span>
+        </button>
+        <button
+          on:click={() => setViewMode('list')}
+          class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors {viewMode === 'list' ? 'bg-[var(--color-background-card)] text-[var(--color-primary-text)] shadow-sm' : 'text-[var(--color-secondary-text)] hover:text-[var(--color-primary-text)]'}"
+          aria-label="List view"
+          aria-pressed={viewMode === 'list'}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span class="hidden sm:inline">List</span>
+        </button>
+      </div>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 xl:gap-8 mt-8">
       <div class="md:col-span-2 bg-[var(--color-background-dark-sections)] border-l-4 border-[var(--color-secondary-accent)] text-[var(--color-secondary-text)] p-4 rounded-md my-2" role="alert">
@@ -94,11 +141,21 @@
     </div>
 
     {#if bookmarkedStories.length > 0}
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
-        {#each bookmarkedStories as bookmark (bookmark.id)}
-          <BookmarkStoryListItem bookmark={bookmark} />
-        {/each}
-      </div>
+      {#if viewMode === 'card'}
+        <!-- Card View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-8">
+          {#each bookmarkedStories as bookmark (bookmark.id)}
+            <BookmarkStoryListItem bookmark={bookmark} />
+          {/each}
+        </div>
+      {:else}
+        <!-- List View -->
+        <div class="flex flex-col gap-3 mt-8">
+          {#each bookmarkedStories as bookmark (bookmark.id)}
+            <BookmarkListItem bookmark={bookmark} />
+          {/each}
+        </div>
+      {/if}
     {:else}
       <div class="flex justify-center items-center h-96">
         <p class="text-xl text-[var(--color-secondary-text)]">You haven't bookmarked any stories yet.</p>
