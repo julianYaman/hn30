@@ -1,5 +1,5 @@
 <script>
-  import { generatePlaceholder, getDomain } from '$lib/utils.js';
+  import { getDomain } from '$lib/utils.js';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { imageCache } from '$lib/stores/imageCache.js';
@@ -8,7 +8,7 @@
 
   export let story;
 
-  const placeholderUrl = generatePlaceholder(story.title, 100, 100);
+  const placeholderUrl = story ? `https://hn30-og-image.vercel.app/api/og?id=${story.id}` : '';
   $: imageUrl = story.ogImage || placeholderUrl;
   $: domain = getDomain(story.url);
 

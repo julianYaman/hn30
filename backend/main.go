@@ -306,6 +306,25 @@ func refreshCache() {
 
 	storyCache.SetLastUpdated(time.Now())
 
+	// Sync top stories to Turso for edge function OG image generation
+	storiesToSync := make([]types.Story, 0, len(topIDs))
+	for _, id := range topIDs {
+		if s, found := storyCache.Get(id); found {
+			storiesToSync = append(storiesToSync, s.Story)
+		}
+	}
+	if err := db.SyncTopStories(storiesToSync); err != nil {
+		logger.Warn("turso_sync_failed",
+			"event", "turso_sync_failed",
+			"error", err,
+		)
+	} else if len(storiesToSync) > 0 {
+		logger.Info("turso_sync_completed",
+			"event", "turso_sync_completed",
+			"synced_count", len(storiesToSync),
+		)
+	}
+
 	logger.Info("cache_refresh_completed",
 		"event", "cache_refresh_completed",
 		"duration_ms", time.Since(cacheStart).Milliseconds(),
@@ -462,6 +481,29 @@ func main() {
 		"db_path", sqlitePath,
 	)
 
+	// Turso initialization (optional - for edge function OG image generation)
+	tursoURL := os.Getenv("TURSO_DATABASE_URL")
+	tursoToken := os.Getenv("TURSO_AUTH_TOKEN")
+	if tursoURL != "" && tursoToken != "" {
+		logger.Info("initializing turso connection",
+			"event", "turso_init_started",
+		)
+		if err := db.OpenTurso(tursoURL, tursoToken); err != nil {
+			logger.Warn("turso connection failed, OG image sync disabled",
+				"event", "turso_init_failed",
+				"error", err,
+			)
+		} else {
+			logger.Info("turso connected",
+				"event", "turso_init_completed",
+			)
+		}
+	} else {
+		logger.Info("turso not configured, OG image sync disabled",
+			"event", "turso_skipped",
+		)
+	}
+
 	// Cache initialization
 	logger.Info("starting cache refresher",
 		"event", "cache_init_started",
@@ -547,6 +589,14 @@ func main() {
 				"event", "db_close_completed",
 			)
 		}
+	}
+
+	// Close Turso connection
+	if err := db.CloseTurso(); err != nil {
+		logger.Error("turso close failed",
+			"event", "turso_close_failed",
+			"error", err,
+		)
 	}
 
 	logger.Info("server stopped",

@@ -1,5 +1,5 @@
 <script>
-  import { generatePlaceholder, getDomain } from '$lib/utils.js';
+  import { getDomain } from '$lib/utils.js';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { imageCache } from '$lib/stores/imageCache.js';
@@ -9,7 +9,7 @@
   export let story;
 
   // Initialize all reactive values at module scope for SSR compatibility
-  const placeholderUrl = story ? generatePlaceholder(story.title, 800, 400) : '';
+  const placeholderUrl = story ? `https://hn30-og-image.vercel.app/api/og?id=${story.id}` : '';
   $: imageUrl = story ? (story.ogImage || placeholderUrl) : '';
   $: domain = story ? getDomain(story.url) : '';
 
