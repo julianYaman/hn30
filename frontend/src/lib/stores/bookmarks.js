@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { bookmarksDB } from '$lib/db';
 import { toast } from '$lib/stores/toast';
+import { getDomain, randomColorrMeBackground } from '$lib/utils';
 import { exportBookmarksToJSON, readJSONFile, validateImportData, downloadFile, generateExportFilename } from '$lib/utils/fileOperations';
 
 
@@ -35,7 +36,7 @@ const createBookmarkStore = () => {
       const newBookmark = {
         id: story.id,
         title: story.title,
-        ogImage: story.ogImage,
+        ogImage: getDomain(story.ogImage) == 'hn30-og-image.vercel.app' ? randomColorrMeBackground() : story.ogImage,
         url: story.url,
         savedAt: new Date().toISOString(),
         postedAt: story.time ? new Date(story.time * 1000).toISOString() : ''
@@ -61,7 +62,7 @@ const createBookmarkStore = () => {
     const newBookmark = {
       id: story.id,
       title: story.title,
-      ogImage: story.ogImage,
+      ogImage: getDomain(story.ogImage) == 'hn30-og-image.vercel.app' ? randomColorrMeBackground() : story.ogImage,
       url: story.url,
       savedAt: new Date().toISOString(),
       postedAt: story.time ? new Date(story.time * 1000).toISOString() : ''

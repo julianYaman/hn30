@@ -13,6 +13,13 @@ export function getDomain(url) {
   }
 }
 
+export function randomColorrMeBackground () {
+
+  const hex = Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+  return `https://colorr.me/i/${hex}.png?w=1200&h=630`
+
+}
+
 /**
  * Formats a unix timestamp into a human-readable string.
  * @param {number} unixTimestamp The unix timestamp.

@@ -1,5 +1,5 @@
 <script>
-  import { generatePlaceholder, getDomain, timeAgo } from '$lib/utils.js';
+  import { randomColorrMeBackground, getDomain, timeAgo } from '$lib/utils.js';
   import { bookmarks } from '$lib/stores/bookmarks.js';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
@@ -7,7 +7,7 @@
 
   export let bookmark;
 
-  const placeholderUrl = generatePlaceholder(bookmark.title, 400, 225);
+  const placeholderUrl = randomColorrMeBackground();
   $: imageUrl = bookmark.ogImage || placeholderUrl;
   $: domain = getDomain(bookmark.url);
 
