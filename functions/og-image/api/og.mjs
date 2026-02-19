@@ -1,3 +1,4 @@
+/** Version 1.0.0 */
 import React from "react";
 import { ImageResponse } from "@vercel/og";
 import { createClient } from "@libsql/client";
