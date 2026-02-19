@@ -8,7 +8,7 @@
 
   export let story;
 
-  const placeholderUrl = story ? `https://hn30-og-image.vercel.app/api/og?id=${story.id}` : '';
+  const placeholderUrl = story ? `/api/og?id=${story.id}` : '';
   $: imageUrl = story.ogImage || placeholderUrl;
   $: domain = getDomain(story.url);
 

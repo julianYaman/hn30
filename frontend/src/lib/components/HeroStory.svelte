@@ -9,7 +9,7 @@
   export let story;
 
   // Initialize all reactive values at module scope for SSR compatibility
-  const placeholderUrl = story ? `https://hn30-og-image.vercel.app/api/og?id=${story.id}` : '';
+  const placeholderUrl = story ? `/api/og?id=${story.id}` : '';
   $: imageUrl = story ? (story.ogImage || placeholderUrl) : '';
   $: domain = story ? getDomain(story.url) : '';
 

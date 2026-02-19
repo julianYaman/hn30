@@ -36,7 +36,7 @@ const createBookmarkStore = () => {
       const newBookmark = {
         id: story.id,
         title: story.title,
-        ogImage: getDomain(story.ogImage) == 'hn30-og-image.vercel.app' ? randomColorrMeBackground() : story.ogImage,
+        ogImage: getDomain(story.ogImage) == '' ? randomColorrMeBackground() : story.ogImage,
         url: story.url,
         savedAt: new Date().toISOString(),
         postedAt: story.time ? new Date(story.time * 1000).toISOString() : ''
@@ -62,7 +62,7 @@ const createBookmarkStore = () => {
     const newBookmark = {
       id: story.id,
       title: story.title,
-      ogImage: getDomain(story.ogImage) == 'hn30-og-image.vercel.app' ? randomColorrMeBackground() : story.ogImage,
+      ogImage: getDomain(story.ogImage) == '' ? randomColorrMeBackground() : story.ogImage,
       url: story.url,
       savedAt: new Date().toISOString(),
       postedAt: story.time ? new Date(story.time * 1000).toISOString() : ''
