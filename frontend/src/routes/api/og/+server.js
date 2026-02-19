@@ -1,7 +1,6 @@
 import { ImageResponse } from '@vercel/og';
 import { PRIVATE_API_BASE_URL } from '$env/static/private';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { getDomain } from '$lib/utils';
 
 // Generate a deterministic color from a string
 function stringToColor(str) {
@@ -22,17 +21,6 @@ function generateGradient(str) {
 	const color1 = stringToColor(str);
 	const color2 = stringToColor(str.split('').reverse().join(''));
 	return `linear-gradient(135deg, #${color1}, #${color2})`;
-}
-
-// Extract domain from URL
-function extractDomain(url) {
-	if (!url) return null;
-	try {
-		const urlObj = new URL(url);
-		return urlObj.hostname.replace(/^www\./, '');
-	} catch {
-		return null;
-	}
 }
 
 // One day in seconds for cache headers
@@ -69,21 +57,28 @@ export async function GET({ url, fetch }) {
 		return new Response('Story not in top 30', { status: 404 });
 	}
 
-	// Load fonts from static directory
-	const fontExtraBoldPath = join(process.cwd(), 'static', 'Inter-ExtraBold.ttf');
-	const fontRegularPath = join(process.cwd(), 'static', 'Inter-Regular.ttf');
-
+	// Load fonts via HTTP from static directory (works in both dev and production)
+	const origin = url.origin;
 	let fontExtraBoldData, fontRegularData;
 	try {
-		fontExtraBoldData = readFileSync(fontExtraBoldPath);
-		fontRegularData = readFileSync(fontRegularPath);
+		const [fontExtraBoldRes, fontRegularRes] = await Promise.all([
+			fetch(`${origin}/Inter-ExtraBold.ttf`),
+			fetch(`${origin}/Inter-Regular.ttf`)
+		]);
+
+		if (!fontExtraBoldRes.ok || !fontRegularRes.ok) {
+			throw new Error('Font fetch failed');
+		}
+
+		fontExtraBoldData = await fontExtraBoldRes.arrayBuffer();
+		fontRegularData = await fontRegularRes.arrayBuffer();
 	} catch (error) {
 		console.error('Failed to load fonts:', error);
 		return new Response('Failed to load fonts', { status: 500 });
 	}
 
 	const gradient = generateGradient(story.title);
-	const domain = extractDomain(story.url);
+	const domain = getDomain(story.url);
 
 	// Create the OG image using @vercel/og
 	const imageResponse = new ImageResponse(
