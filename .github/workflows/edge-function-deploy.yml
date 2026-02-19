@@ -21,6 +21,6 @@ jobs:
             --prod \
             --cwd functions/og-image \
             --yes \
-            --project=${{ secrets.VERCEL_PROJECT_ID }} \
-            --scope=${{ secrets.VERCEL_ORG_ID }} \
-            --token=${{ secrets.VERCEL_TOKEN }}
+            --project ${{ secrets.VERCEL_PROJECT_ID }} \
+            --scope ${{ secrets.VERCEL_ORG_ID }} \
+            --token ${{ secrets.VERCEL_TOKEN }}
