@@ -3,7 +3,7 @@ module hn30/backend
 go 1.25.0
 
 require (
-	github.com/OneSignal/onesignal-go-api/v5 v5.3.0-beta1
+	github.com/OneSignal/onesignal-go-api/v5 v5.3.0
 	github.com/PuerkitoBio/goquery v1.12.0
 	github.com/go-shiori/go-readability v0.0.0-20250217085726-9f5bf5ca7612
 	github.com/google/uuid v1.6.0
