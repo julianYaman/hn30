@@ -24,7 +24,7 @@
 		"@sveltejs/kit": "^2.52.2",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
 		"@tailwindcss/typography": "^0.5.19",
-		"@vite-pwa/sveltekit": "^1.1.0",
+		"@vite-pwa/sveltekit": "^0.4.0",
 		"autoprefixer": "^10.4.22",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^10.1.8",
