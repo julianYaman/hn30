@@ -1,52 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>hn30 - Top 30 Hacker News Stories</title>
-		<meta
-			name="description"
-			content="A lightning-fast, modern Hacker News reader. Get the top 30 stories with AI-powered summaries and a clean interface."
-		/>
+		<title>hn30 — Top 30 Hacker News Stories</title>
+		<meta name="description" content="A curated daily edition of the top 30 Hacker News stories." />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-		<!-- Canonical URL -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400..800;1,400..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Press+Start+2P&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="canonical" href="https://hn30.yamanlabs.com/" />
-
-		<!-- Open Graph / Facebook -->
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://hn30.yamanlabs.com/" />
-		<meta property="og:title" content="hn30 - Top 30 Hacker News Stories with AI Summaries" />
-		<meta property="og:description" content="A lightning-fast, modern Hacker News reader. Get the top 30 stories with AI-powered summaries and a clean interface." />
+		<meta property="og:title" content="hn30 — Top 30 Hacker News Stories" />
+		<meta
+			property="og:description"
+			content="A curated daily edition of the top 30 Hacker News stories."
+		/>
 		<meta property="og:image" content="%sveltekit.assets%/og-image.png" />
-
-		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content="https://hn30.yamanlabs.com/" />
-		<meta property="twitter:title" content="hn30 - Top 30 Hacker News Stories with AI Summaries" />
-		<meta property="twitter:description" content="A lightning-fast, modern Hacker News reader. Get the top 30 stories with AI-powered summaries and a clean interface." />
-		<meta property="twitter:image" content="%sveltekit.assets%/og-image.png" />
-
-		<script defer data-domain="hn30.yamanlabs.com" src="https://analytics.yamanlabs.com/js/script.js"></script>
-
+		<script
+			defer
+			data-domain="hn30.yamanlabs.com"
+			src="https://analytics.yamanlabs.com/js/script.js"
+		></script>
 		<script>
-			// A little script to apply the theme before the page is rendered
-			// to avoid a flash of the wrong theme.
-			(function() {
+			(function () {
 				const theme = localStorage.getItem('theme');
-				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				if (theme === 'dark' || (!theme && prefersDark)) {
+				if (
+					theme === 'dark' ||
+					(!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+				)
 					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
-				}
 			})();
 		</script>
 		%sveltekit.head%
 	</head>
-	<body
-		data-sveltekit-preload-data="hover"
-		class="bg-[var(--color-background-light)] text-[var(--color-primary-text)] font-sans"
-	>
+	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>

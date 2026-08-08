@@ -1,171 +1,70 @@
 <script>
-  import { theme } from '$lib/stores/theme.js';
-  import { notifications } from '$lib/stores/notifications.js';
-  import SettingsModal from './SettingsModal.svelte';
-  import { fly } from 'svelte/transition';
-  import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+	import { theme } from '$lib/stores/theme.js';
+	import { notifications } from '$lib/stores/notifications.js';
+	import SettingsModal from './SettingsModal.svelte';
+	import { onMount } from 'svelte';
 
-  let menuOpen = false;
-  let settingsOpen = false;
-  let isMobile = false;
+	let settingsOpen = false;
 
-  const navLinks = [
-    {
-      label: 'Blog',
-      href: 'https://yaman.pro/blog',
-      external: true
-    },
-    {
-      label: 'Bookmarks',
-      href: '/bookmarks'
-    }
-  ];
+	function toggleTheme() {
+		theme.setTheme($theme === 'light' ? 'dark' : 'light');
+	}
 
-  const MOBILE_BREAKPOINT = '(max-width: 767px)';
-
-  function toggleTheme() {
-    theme.setTheme($theme === 'light' ? 'dark' : 'light');
-  }
-
-  function closeMenu() {
-    menuOpen = false;
-  }
-
-  // Portal action to render the mobile drawer at <body> level so transforms elsewhere don't affect its position.
-  function portal(node) {
-    const target = typeof document !== 'undefined' ? document.body : null;
-    if (!target) return;
-    target.appendChild(node);
-    return {
-      destroy() {
-        if (node.parentNode === target) {
-          target.removeChild(node);
-        }
-      }
-    };
-  }
-
-  onMount(() => {
-    notifications.initialize();
-    
-    const mql = window.matchMedia(MOBILE_BREAKPOINT);
-    const handleChange = (e) => {
-      isMobile = e.matches;
-      if (!isMobile) {
-        menuOpen = false;
-      }
-    };
-
-    handleChange(mql);
-    mql.addEventListener('change', handleChange);
-
-    return () => {
-      mql.removeEventListener('change', handleChange);
-    };
-  });
+	onMount(() => notifications.initialize());
 </script>
 
-<header class="bg-[var(--color-background-card)] shadow-sm sticky top-0 z-20">
-  <div class="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
-    <a href="/" class="flex items-center space-x-2">
-      <span class="bg-[var(--color-primary-accent)] text-white font-bold text-xl rounded-md px-2 py-1">hn30</span>
-      <h1 class="text-2xl font-bold text-[var(--color-primary-text)]">tech news</h1>
-    </a>
-
-    <!-- Desktop Nav -->
-    <nav class="hidden md:flex items-center space-x-6">
-      {#each navLinks as link}
-        <a
-          href={link.href}
-          class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors"
-          target={link.external ? '_blank' : undefined}
-          rel={link.external ? 'noopener noreferrer' : undefined}
-          title={link.label === 'Bookmarks' ? link.label : undefined}
-        >
-          {#if link.label === 'Bookmarks'}
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-          {:else}
-            {link.label}
-          {/if}
-        </a>
-      {/each}
-
-      <button on:click={() => settingsOpen = true} class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" title="Settings">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </button>
-
-      <button on:click={toggleTheme} class="text-[var(--color-secondary-text)] hover:text-[var(--color-primary-accent)] transition-colors" title="Toggle Theme">
-        {#if $theme === 'light'}
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        {:else}
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        {/if}
-      </button>
-    </nav>
-
-    <!-- Mobile Menu Button -->
-    <div class="md:hidden">
-      <button on:click={() => menuOpen = true} aria-label="Open menu" class="text-[var(--color-primary-text)] p-2 -mr-2">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-      </button>
-    </div>
-  </div>
+<header class="site-header">
+	<div class="announcement-banner" role="status">
+		<p>
+			hn30.yamanlabs.com is now <strong>hn30.eu</strong>
+			<a href="https://yaman.pro/blog/hn30-eu" target="_blank" rel="noopener noreferrer"
+				>Read more →</a
+			>
+		</p>
+	</div>
+	<div class="masthead">
+		<a href="/" class="brand" aria-label="HN30 front page">
+			<span class="brand__mark">HN30</span>
+			<span class="brand__tag">Top 30 stories<br />from Hacker News</span>
+		</a>
+		<div class="edition">
+			<span>Updated regularly</span><span>{new Date().toLocaleDateString('en-CA')}</span>
+		</div>
+		<nav class="utility-nav" aria-label="Utility navigation">
+			<button
+				class="utility-button theme-toggle"
+				on:click={toggleTheme}
+				aria-label={$theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+				title={$theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+			>
+				{#if $theme === 'light'}
+					<svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true">
+						<path
+							d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+						/>
+					</svg>
+					<span>Dark</span>
+				{:else}
+					<svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true">
+						<circle cx="12" cy="12" r="4" />
+						<path
+							d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+						/>
+					</svg>
+					<span>Light</span>
+				{/if}
+			</button>
+			<button class="utility-button" on:click={() => (settingsOpen = true)}>Settings</button>
+		</nav>
+	</div>
+	<nav class="main-nav" aria-label="Primary navigation">
+		<a href="/" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>Front page</a>
+		<a href="https://yaman.pro/blog" target="_blank" rel="noopener noreferrer">Blog</a>
+		<a href="/bookmarks" aria-current={$page.url.pathname === '/bookmarks' ? 'page' : undefined}
+			>Bookmarks</a
+		>
+	</nav>
 </header>
-
-<!-- Mobile Menu Panel -->
-{#if menuOpen && isMobile}
-  <div use:portal>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div
-      transition:fly={{ duration: 200, opacity: 0 }}
-      on:click={closeMenu}
-      class="fixed inset-0 bg-white/30 backdrop-blur-sm z-30"
-      role="button"
-      tabindex="0"
-    ></div>
-
-    <div
-      transition:fly={{ duration: 300, x: '100%' }}
-      class="fixed top-0 right-0 h-screen w-64 bg-[var(--color-background-card)] shadow-lg z-40 overflow-y-auto"
-    >
-      <div class="p-5 flex justify-end">
-        <button on:click={closeMenu} aria-label="Close menu" class="text-[var(--color-primary-text)] p-2 -mr-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-      <nav class="flex flex-col text-lg">
-        {#each navLinks as link}
-          <a
-            href={link.href}
-            on:click={closeMenu}
-            class="p-4 hover:bg-[var(--color-background-dark-sections)]"
-            target={link.external ? '_blank' : undefined}
-            rel={link.external ? 'noopener noreferrer' : undefined}
-          >
-            {link.label}
-          </a>
-        {/each}
-
-        <button on:click={() => { settingsOpen = true; closeMenu(); }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
-          Settings
-        </button>
-        <button on:click={() => { toggleTheme(); closeMenu(); }} class="p-4 text-left hover:bg-[var(--color-background-dark-sections)] w-full">
-          Toggle Theme
-        </button>
-      </nav>
-    </div>
-  </div>
-{/if}
 
 <SettingsModal bind:isOpen={settingsOpen} />
