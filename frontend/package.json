@@ -21,7 +21,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.58.2",
 		"@sveltejs/adapter-node": "^5.5.4",
-		"@sveltejs/kit": "^2.52.2",
+		"@sveltejs/kit": "^2.70.2",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
 		"@tailwindcss/typography": "^0.5.19",
 		"@vite-pwa/sveltekit": "^1.1.0",
@@ -32,7 +32,7 @@
 		"postcss": "^8.5.12",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.5.1",
-		"svelte": "^5.55.0",
+		"svelte": "^5.56.8",
 		"svelte-check": "^4.3.4",
 		"tailwindcss": "^4.1.18",
 		"tslib": "^2.6.3",
@@ -44,7 +44,7 @@
 	"dependencies": {
 		"@tailwindcss/postcss": "^4.2.2",
 		"@tailwindcss/vite": "^4.2.1",
-		"@vercel/og": "^0.11.1",
+		"@vercel/og": "^1.0.1",
 		"idb": "^8.0.3"
 	}
 }
