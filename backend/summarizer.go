@@ -168,6 +168,10 @@ func generateSummary(articleText string) (SummaryResponse, error) {
 }
 
 func extractArticleText(articleURL string) (string, error) {
+	return extractArticleTextWithClient(articleURL, summarizerClient)
+}
+
+func extractArticleTextWithClient(articleURL string, client *http.Client) (string, error) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
 		"event_type", "article_extraction",
 		"operation", "extract_text",
@@ -195,7 +199,10 @@ func extractArticleText(articleURL string) (string, error) {
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 
-	resp, err := summarizerClient.Do(req)
+	if client == nil {
+		client = summarizerClient
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		logger.Error("http request failed",
 			"event", "http_request_failed",

@@ -21,6 +21,21 @@ export function randomColorrMeBackground () {
 }
 
 /**
+ * Picks a stable muted preview tone index from a string seed.
+ * Used for story image placeholders when no OG image exists.
+ * @param {string} seed
+ * @returns {number}
+ */
+export function mutedPreviewTone(seed = '') {
+  const tones = 12;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash % tones;
+}
+
+/**
  * Formats a unix timestamp into a human-readable string.
  * @param {number} unixTimestamp The unix timestamp.
  * @returns {string} A human-readable time ago string.
@@ -38,6 +53,27 @@ export function timeAgo(ts) {
   interval = seconds / 60;
   if (interval > 1) return Math.floor(interval) + " minutes ago";
   return Math.floor(seconds) + " seconds ago";
+}
+
+/**
+ * Formats a unix timestamp into a short relative time string.
+ * Examples: "4H", "30 Min", "2D"
+ * @param {number} unixTimestamp The unix timestamp.
+ * @returns {string} A short time ago string.
+ */
+export function timeAgoShort(ts) {
+  const seconds = Math.floor((new Date() - new Date(ts * 1000)) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + "Y";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + "Mo";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + "D";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + "H";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " Min";
+  return Math.floor(seconds) + "s";
 }
 
 /**

@@ -70,3 +70,58 @@ func summarizeHandler(w http.ResponseWriter, r *http.Request) {
 	// 6. Return the new summary
 	json.NewEncoder(w).Encode(map[string]string{"summary": summary.Summary, "model": summary.Model})
 }
+
+// Public read-only digest HTML (same template as the email). Never generates AI blurbs.
+func newsletterDigestHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	htmlBody, err := buildDigestHTML()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Cache-Control", "public, max-age=120")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(htmlBody))
+}
+
+func newsletterSubscribeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var body struct {
+		Email string `json:"email"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	client, err := newMailjetClientFromEnv()
+	if err != nil {
+		utils.LogError("newsletter subscribe misconfigured: %v", err)
+		http.Error(w, "Newsletter subscribe is not configured", http.StatusServiceUnavailable)
+		return
+	}
+
+	if err := client.SubscribeEmail(body.Email); err != nil {
+		utils.LogError("newsletter subscribe failed: %v", err)
+		http.Error(w, subscribeErrorMessage(err), subscribeErrorStatus(err))
+		return
+	}
+
+	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
