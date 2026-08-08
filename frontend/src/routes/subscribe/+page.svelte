@@ -5,16 +5,34 @@
 		'https://1orpm.mjt.lu/wgt/1orpm/08l9/form?c=58f63092';
 	const MAILJET_EMBED_SCRIPT = 'https://app.mailjet.com/pas-nc-embedded-v2.js';
 
+	let formFrame;
+
 	onMount(() => {
-		if (document.querySelector(`script[src="${MAILJET_EMBED_SCRIPT}"]`)) return;
+		const initializeForm = () => {
+			if (formFrame && window.iFrameResize && !formFrame.iFrameResizer) {
+				window.iFrameResize({ checkOrigin: false }, formFrame);
+			}
+		};
+
+		if (window.iFrameResize) {
+			initializeForm();
+			return;
+		}
+
+		const existingScript = document.querySelector(`script[src="${MAILJET_EMBED_SCRIPT}"]`);
+		if (existingScript) {
+			existingScript.addEventListener('load', initializeForm, { once: true });
+			return () => existingScript.removeEventListener('load', initializeForm);
+		}
 
 		const script = document.createElement('script');
 		script.src = MAILJET_EMBED_SCRIPT;
 		script.async = true;
+		script.addEventListener('load', initializeForm, { once: true });
 		document.body.appendChild(script);
 
 		return () => {
-			script.remove();
+			script.removeEventListener('load', initializeForm);
 		};
 	});
 </script>
@@ -41,6 +59,7 @@
 
 	<div class="subscribe-page__form">
 		<iframe
+			bind:this={formFrame}
 			data-w-type="embedded"
 			title="hn30 Daily dispatch subscription form"
 			frameborder="0"

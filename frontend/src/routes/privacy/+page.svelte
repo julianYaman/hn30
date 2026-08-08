@@ -71,9 +71,9 @@
                     You can disable push notifications at any time by toggling them off in the Settings modal or by using your browser's notification settings.
                 </p>
 
-                <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">5. Daily Dispatch Newsletter</h3>
+                <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">5. hn30 Daily Dispatch Newsletter</h3>
                 <p>
-                    If you subscribe to our free <strong class="font-semibold text-[var(--color-primary-text)]">Daily dispatch</strong> email newsletter, we collect and process your <strong class="font-semibold text-[var(--color-primary-text)]">email address</strong> so we can send you a daily digest of the top 30 Hacker News stories.
+                    If you subscribe to our free <strong class="font-semibold text-[var(--color-primary-text)]">hn30 Daily Dispatch</strong> email newsletter, we collect and process your <strong class="font-semibold text-[var(--color-primary-text)]">email address</strong> so we can send you a daily digest of the top 30 Hacker News stories.
                 </p>
                 <p class="mt-2">
                     Sign-up is handled through <a href="https://www.mailjet.com/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet</a>, our email service provider. We use a <strong class="font-semibold text-[var(--color-primary-text)]">double opt-in</strong> process: after you submit the subscription form, Mailjet sends you a confirmation email. Your address is added to our mailing list only after you click the confirmation link in that email.
@@ -100,8 +100,8 @@
                 <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">How We Handle Third-Party Services</h2>
                 <ul class="list-disc list-inside pl-4 space-y-2">
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (OpenRouter):</strong> When you request an on-site TL;DR summary, the content of the article is sent to the OpenRouter API, which routes requests to various AI models. We do not send any personal information about you to OpenRouter or the underlying AI providers.</li>
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter descriptions (OpenRouter):</strong> When we prepare the Daily dispatch, we may send publicly available article text to OpenRouter to generate short one- or two-sentence descriptions for some stories. These descriptions are stored on our servers and reused in later editions when the same story appears again. No subscriber email addresses or other personal data are sent to OpenRouter for this purpose.</li>
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Email newsletter (Mailjet):</strong> If you subscribe to the Daily dispatch, your email address and subscription status are stored and processed by Mailjet to deliver emails, manage your list membership, and handle confirmations and unsubscribes. Mailjet may process data in the EU and/or other countries where it operates. See <a href="https://www.mailjet.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet's privacy policy</a> for details.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter descriptions (OpenRouter):</strong> When we prepare the hn30 Daily Dispatch, we may send publicly available article text to OpenRouter to generate short one- or two-sentence descriptions for some stories. These descriptions are stored on our servers and reused in later editions when the same story appears again. No subscriber email addresses or other personal data are sent to OpenRouter for this purpose.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Email newsletter (Mailjet):</strong> If you subscribe to the hn30 Daily Dispatch, your email address and subscription status are stored and processed by Mailjet to deliver emails, manage your list membership, and handle confirmations and unsubscribes. Mailjet may process data in the EU and/or other countries where it operates. See <a href="https://www.mailjet.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet's privacy policy</a> for details.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications (OneSignal):</strong> OneSignal is only loaded and initialized after you accept the cookie notice. Your device token is sent to OneSignal's servers to deliver push notifications. We do not share any other personal data with OneSignal.</li>
                 </ul>
             </section>
@@ -148,7 +148,7 @@
                     <li>Lodge a complaint with your local data protection authority</li>
                 </ul>
                 <p class="mt-2">
-                    To exercise these rights regarding the newsletter, you can unsubscribe via any Daily dispatch email or contact us using the details below. For other requests, please reach out and we will respond within a reasonable time.
+                    To exercise these rights regarding the newsletter, you can unsubscribe via any hn30 Daily Dispatch email or contact us using the details below. For other requests, please reach out and we will respond within a reasonable time.
                 </p>
             </section>
 

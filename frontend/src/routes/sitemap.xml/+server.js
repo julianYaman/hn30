@@ -1,5 +1,5 @@
 export async function GET() {
-    const baseUrl = 'https://hn.yamanlabs.com';
+    const baseUrl = 'https://hn30.eu';
     const pages = ['/', '/privacy', '/bookmarks', '/subscribe', '/digest'];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
