@@ -3,14 +3,14 @@
     <meta name="description" content="Learn how hn30 protects your privacy. We collect minimal data to provide our service and do not track you." />
     <meta property="og:title" content="Privacy Policy - hn30" />
     <meta property="og:description" content="Learn how hn30 protects your privacy. We collect minimal data to provide our service and do not track you." />
-    <link rel="canonical" href="https://hn.yamanlabs.com/privacy" />
-    <meta property="og:url" content="https://hn.yamanlabs.com/privacy" />
+    <link rel="canonical" href="https://hn30.eu/privacy" />
+    <meta property="og:url" content="https://hn30.eu/privacy" />
 </svelte:head>
 
   <main class="flex-grow">
     <div class="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <h1 class="text-4xl font-extrabold mb-2 text-[var(--color-primary-text)]">Privacy Policy</h1>
-        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: January 5, 2026</p>
+        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: August 8, 2026</p>
 
         <div class="space-y-6 text-[var(--color-secondary-text)] leading-relaxed">
             <section>
@@ -70,12 +70,38 @@
                 <p class="mt-2">
                     You can disable push notifications at any time by toggling them off in the Settings modal or by using your browser's notification settings.
                 </p>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">5. Daily Dispatch Newsletter</h3>
+                <p>
+                    If you subscribe to our free <strong class="font-semibold text-[var(--color-primary-text)]">Daily dispatch</strong> email newsletter, we collect and process your <strong class="font-semibold text-[var(--color-primary-text)]">email address</strong> so we can send you a daily digest of the top 30 Hacker News stories.
+                </p>
+                <p class="mt-2">
+                    Sign-up is handled through <a href="https://www.mailjet.com/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet</a>, our email service provider. We use a <strong class="font-semibold text-[var(--color-primary-text)]">double opt-in</strong> process: after you submit the subscription form, Mailjet sends you a confirmation email. Your address is added to our mailing list only after you click the confirmation link in that email.
+                </p>
+                <p class="mt-2">Each newsletter may include:</p>
+                <ul class="list-disc list-inside pl-4 space-y-1">
+                    <li>Story titles and links from the current top 30 on Hacker News</li>
+                    <li>Short AI-generated descriptions of some articles (see OpenRouter below)</li>
+                    <li>A link to read the edition in your browser at <a href="https://hn30.eu/digest" class="text-[var(--color-primary-accent)] hover:underline">hn30.eu/digest</a></li>
+                    <li>An unsubscribe link in every email</li>
+                </ul>
+                <p class="mt-2">
+                    <strong class="font-semibold text-[var(--color-primary-text)]">Legal basis:</strong> We send the newsletter based on your consent, which you give when you confirm your subscription via the double opt-in email.
+                </p>
+                <p class="mt-2">
+                    <strong class="font-semibold text-[var(--color-primary-text)]">Unsubscribe:</strong> You can stop receiving the newsletter at any time by clicking the unsubscribe link in any email, or by contacting us (see Contact Us below).
+                </p>
+                <p class="mt-2">
+                    We do not sell your email address. Mailjet stores your subscription status and processes emails on our behalf as a data processor.
+                </p>
             </section>
 
             <section>
                 <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">How We Handle Third-Party Services</h2>
                 <ul class="list-disc list-inside pl-4 space-y-2">
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (OpenRouter):</strong> When you request an AI summary, the content of the article is sent to the OpenRouter API, which routes requests to various AI models. We do not send any personal information about you to OpenRouter or the underlying AI providers.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (OpenRouter):</strong> When you request an on-site TL;DR summary, the content of the article is sent to the OpenRouter API, which routes requests to various AI models. We do not send any personal information about you to OpenRouter or the underlying AI providers.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter descriptions (OpenRouter):</strong> When we prepare the Daily dispatch, we may send publicly available article text to OpenRouter to generate short one- or two-sentence descriptions for some stories. These descriptions are stored on our servers and reused in later editions when the same story appears again. No subscriber email addresses or other personal data are sent to OpenRouter for this purpose.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Email newsletter (Mailjet):</strong> If you subscribe to the Daily dispatch, your email address and subscription status are stored and processed by Mailjet to deliver emails, manage your list membership, and handle confirmations and unsubscribes. Mailjet may process data in the EU and/or other countries where it operates. See <a href="https://www.mailjet.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet's privacy policy</a> for details.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications (OneSignal):</strong> OneSignal is only loaded and initialized after you accept the cookie notice. Your device token is sent to OneSignal's servers to deliver push notifications. We do not share any other personal data with OneSignal.</li>
                 </ul>
             </section>
@@ -88,11 +114,22 @@
                 <ul class="list-disc list-inside pl-4 space-y-1 mt-2">
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Analytics:</strong> Plausible Analytics (cookie-free) is used for site statistics.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications:</strong> OneSignal is only loaded after you accept the cookie notice.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter sign-up:</strong> If you use our Mailjet subscription form, Mailjet may use cookies or similar technologies on their form pages to process your sign-up and confirmation.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Local Storage:</strong> Your preferences are stored locally on your device.</li>
                 </ul>
                 <p class="mt-2">
                     By clicking "Accept" on the cookie notice, you acknowledge that you have read and understood this Privacy Policy.
                 </p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">Data Retention</h2>
+                <ul class="list-disc list-inside pl-4 space-y-2">
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Server logs:</strong> Retained only as long as needed for security and abuse prevention.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter data:</strong> Your email address is kept on our mailing list until you unsubscribe or ask us to delete it.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Digest snapshots:</strong> We may store daily editions (story titles, links, and generated descriptions) on our servers for archive and delivery purposes.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Local storage:</strong> Remains on your device until you clear it.</li>
+                </ul>
             </section>
 
             <section>
@@ -102,7 +139,17 @@
 
             <section>
                 <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">Your Rights</h2>
-                <p>You have the right to know what data we collect. If you have any questions about this policy, please don't hesitate to reach out.</p>
+                <p>Depending on where you live, you may have the right to:</p>
+                <ul class="list-disc list-inside pl-4 space-y-1 mt-2">
+                    <li>Access the personal data we hold about you</li>
+                    <li>Request correction or deletion of your data</li>
+                    <li>Withdraw consent (for example, by unsubscribing from the newsletter)</li>
+                    <li>Object to or restrict certain processing</li>
+                    <li>Lodge a complaint with your local data protection authority</li>
+                </ul>
+                <p class="mt-2">
+                    To exercise these rights regarding the newsletter, you can unsubscribe via any Daily dispatch email or contact us using the details below. For other requests, please reach out and we will respond within a reasonable time.
+                </p>
             </section>
 
             <section>

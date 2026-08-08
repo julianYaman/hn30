@@ -471,15 +471,19 @@ func main() {
 		"event", "cache_init_completed",
 	)
 
+	startNewsletterScheduler()
+
 	// HTTP server setup
 	server := &http.Server{Addr: ":8080"}
 
 	http.Handle("/api/top", LoggingMiddleware(http.HandlerFunc(topStoriesHandler)))
 	http.Handle("/api/summarize", LoggingMiddleware(rateLimitMiddleware(http.HandlerFunc(summarizeHandler))))
+	http.Handle("/api/newsletter/digest", LoggingMiddleware(http.HandlerFunc(newsletterDigestHandler)))
+	http.Handle("/api/newsletter/subscribe", LoggingMiddleware(http.HandlerFunc(newsletterSubscribeHandler)))
 
 	logger.Info("http routes registered",
 		"event", "routes_registered",
-		"routes", []string{"/api/top", "/api/summarize"},
+		"routes", []string{"/api/top", "/api/summarize", "/api/newsletter/digest", "/api/newsletter/subscribe"},
 	)
 
 	go func() {

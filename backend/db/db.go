@@ -123,6 +123,38 @@ func migrate(db *sql.DB) error {
 
 		CREATE INDEX IF NOT EXISTS idx_notified
 		ON stories (notified_at);
+
+		CREATE TABLE IF NOT EXISTS story_blurbs (
+			hn_id INTEGER PRIMARY KEY,
+			blurb TEXT NOT NULL DEFAULT '',
+			status TEXT NOT NULL,
+			model TEXT NOT NULL DEFAULT '',
+			created_at INTEGER NOT NULL,
+			updated_at INTEGER NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS digests (
+			digest_date TEXT PRIMARY KEY,
+			status TEXT NOT NULL,
+			claimed_at INTEGER NOT NULL,
+			sent_at INTEGER,
+			error TEXT NOT NULL DEFAULT '',
+			mailjet_draft_id INTEGER
+		);
+
+		CREATE TABLE IF NOT EXISTS digest_items (
+			digest_date TEXT NOT NULL,
+			rank INTEGER NOT NULL,
+			hn_id INTEGER NOT NULL,
+			title TEXT NOT NULL,
+			url TEXT NOT NULL,
+			score INTEGER NOT NULL DEFAULT 0,
+			blurb TEXT NOT NULL DEFAULT '',
+			PRIMARY KEY (digest_date, rank)
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_digest_items_date
+		ON digest_items (digest_date);
 	`)
 
 	if err != nil {
@@ -136,8 +168,8 @@ func migrate(db *sql.DB) error {
 
 	logger.Info("migration schema applied",
 		"event", "schema_execution_completed",
-		"tables", []string{"stories"},
-		"indexes", []string{"idx_notified"},
+		"tables", []string{"stories", "story_blurbs", "digests", "digest_items"},
+		"indexes", []string{"idx_notified", "idx_digest_items_date"},
 		"duration_ms", time.Since(start).Milliseconds(),
 	)
 
