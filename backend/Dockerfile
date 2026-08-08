@@ -14,6 +14,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /server
 # final stage
 FROM alpine:latest
 
+RUN apk add --no-cache ca-certificates tzdata
+
 WORKDIR /app
 
 COPY --from=build /server /server

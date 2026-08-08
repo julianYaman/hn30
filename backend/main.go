@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+	_ "time/tzdata" // embed IANA zones for Alpine/minimal images
 
 	"github.com/google/uuid"
 
