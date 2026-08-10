@@ -15,19 +15,21 @@ import (
 const mailjetAPIBase = "https://api.mailjet.com/v3/REST"
 
 type mailjetClient struct {
-	apiKey    string
-	apiSecret string
-	listID    int
-	sender    string
+	apiKey      string
+	apiSecret   string
+	listID      int
+	senderID    int
+	senderName  string
 	senderEmail string
-	http      *http.Client
+	http        *http.Client
 }
 
 func newMailjetClientFromEnv() (*mailjetClient, error) {
 	apiKey := strings.TrimSpace(os.Getenv("MAILJET_API_KEY"))
 	apiSecret := strings.TrimSpace(os.Getenv("MAILJET_API_SECRET"))
 	listIDStr := strings.TrimSpace(os.Getenv("MAILJET_LIST_ID"))
-	sender := strings.TrimSpace(os.Getenv("MAILJET_SENDER_NAME"))
+	senderIDStr := strings.TrimSpace(os.Getenv("MAILJET_SENDER_ID"))
+	senderName := strings.TrimSpace(os.Getenv("MAILJET_SENDER_NAME"))
 	senderEmail := strings.TrimSpace(os.Getenv("MAILJET_SENDER_EMAIL"))
 
 	if apiKey == "" || apiSecret == "" {
@@ -40,18 +42,26 @@ func newMailjetClientFromEnv() (*mailjetClient, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid MAILJET_LIST_ID: %w", err)
 	}
+	if senderIDStr == "" {
+		return nil, fmt.Errorf("MAILJET_SENDER_ID is required")
+	}
+	senderID, err := strconv.Atoi(senderIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid MAILJET_SENDER_ID: %w", err)
+	}
 	if senderEmail == "" {
 		return nil, fmt.Errorf("MAILJET_SENDER_EMAIL is required")
 	}
-	if sender == "" {
-		sender = "hn30"
+	if senderName == "" {
+		senderName = "hn30 Daily Dispatch"
 	}
 
 	return &mailjetClient{
 		apiKey:      apiKey,
 		apiSecret:   apiSecret,
 		listID:      listID,
-		sender:      sender,
+		senderID:    senderID,
+		senderName:  senderName,
 		senderEmail: senderEmail,
 		http:        &http.Client{Timeout: 30 * time.Second},
 	}, nil
@@ -105,8 +115,9 @@ func (c *mailjetClient) CreateAndSendCampaign(title, subject, htmlPart, textPart
 	var createResp mailjetDataResponse
 	err := c.doJSON("POST", "/campaigndraft", map[string]any{
 		"Locale":         "en_US",
-		"Sender":         c.sender,
+		"Sender":         strconv.Itoa(c.senderID),
 		"SenderEmail":    c.senderEmail,
+		"SenderName":     c.senderName,
 		"Subject":        subject,
 		"ContactsListID": c.listID,
 		"Title":          title,
