@@ -3,5 +3,5 @@
 	<span aria-hidden="true"> · </span>
 	<a href="/privacy">Privacy Policy</a>
 	<span aria-hidden="true"> · </span>
-	<a href="https://status.yaman.pro" target="_blank" rel="noopener noreferrer">Status</a>
+	<a href="https://yamanlabs.status.larm.dev/" target="_blank" rel="noopener noreferrer">Status</a>
 </footer>
