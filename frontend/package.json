@@ -43,7 +43,7 @@
 	"type": "module",
 	"dependencies": {
 		"@tailwindcss/postcss": "^4.2.2",
-		"@tailwindcss/vite": "^4.2.1",
+		"@tailwindcss/vite": "^4.3.3",
 		"@vercel/og": "^1.0.1",
 		"idb": "^8.0.3"
 	}
