@@ -28,7 +28,7 @@
 		"autoprefixer": "^10.4.22",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-svelte": "^3.13.1",
+		"eslint-plugin-svelte": "^3.22.0",
 		"postcss": "^8.5.12",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.5.1",
