@@ -1,5 +1,5 @@
-github.com/OneSignal/onesignal-go-api/v5 v5.11.0 h1:C6ugsHr+W/8JNnnKayizL+ilNO1NWLQzkEbj2E5mu7o=
-github.com/OneSignal/onesignal-go-api/v5 v5.11.0/go.mod h1:fEpe/REdiQ56KW+F34UOGtAor4EmiFGpklClIrjqds4=
+github.com/OneSignal/onesignal-go-api/v5 v5.16.0 h1:vuhaKt+iN2rBW3M/HuTsG+8Xu0KosnLSCie2Oc0fot4=
+github.com/OneSignal/onesignal-go-api/v5 v5.16.0/go.mod h1:fEpe/REdiQ56KW+F34UOGtAor4EmiFGpklClIrjqds4=
 github.com/PuerkitoBio/goquery v1.13.0 h1:mqHbjD7Jmnul4DTR24LKTjo1uUmHUh072kteGV+xpFM=
 github.com/PuerkitoBio/goquery v1.13.0/go.mod h1:Hip5mdBL8K2wEGKJdr27sRaNwIdDajmCwB/ExUPwW+g=
 github.com/andybalholm/cascadia v1.3.4 h1:vM2lgh0Vru9Vwyfm4cQqWP2HHMW0u0+2PAW7Q38Qufg=
