@@ -1,13 +1,13 @@
 module hn30/backend
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/OneSignal/onesignal-go-api/v5 v5.11.0
 	github.com/PuerkitoBio/goquery v1.13.0
 	github.com/go-shiori/go-readability v0.0.0-20250217085726-9f5bf5ca7612
 	github.com/google/uuid v1.6.0
-	golang.org/x/time v0.15.0
+	golang.org/x/time v0.16.0
 	modernc.org/sqlite v1.58.0
 )
 
