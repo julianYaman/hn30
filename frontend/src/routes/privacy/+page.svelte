@@ -10,7 +10,7 @@
   <main class="flex-grow">
     <div class="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <h1 class="text-4xl font-extrabold mb-2 text-[var(--color-primary-text)]">Privacy Policy</h1>
-        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: August 8, 2026</p>
+        <p class="text-sm text-[var(--color-secondary-text)] mb-8">Last updated: October 31, 2026</p>
 
         <div class="space-y-6 text-[var(--color-secondary-text)] leading-relaxed">
             <section>
@@ -37,13 +37,17 @@
 
                 <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">2. Anonymous Website Analytics</h3>
                 <p>
-                    We use Plausible Analytics, a privacy-first analytics tool, to understand website traffic. Plausible does not use cookies or generate persistent identifiers. It collects only anonymous, aggregate data, including:
+                    We use <a href="https://vemetric.com/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Vemetric</a> to understand website traffic. The analytics script is loaded from <code class="bg-[var(--color-background-dark-sections)] text-[var(--color-primary-text)] font-mono text-sm rounded px-2 py-1">cdn.vemetric.com</code>, and events are sent to Vemetric. Cookies are not enabled. Vemetric recognizes a visitor during the same day with a hash of the IP address, the user agent, and a daily rotating salt, so the same person counts as a new visitor the next day. It records:
                 </p>
                 <ul class="list-disc list-inside pl-4 space-y-1">
                     <li>The pages visited</li>
                     <li>The source of traffic (e.g., another website)</li>
                     <li>General information like browser, OS, and country</li>
+                    <li>Clicks on links that leave this site</li>
                 </ul>
+                <p class="mt-2">
+                    Vemetric hosts this data in the EU. See their <a href="https://vemetric.com/docs/frequently-asked-questions" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">documentation</a> for how cookieless tracking works.
+                </p>
 
                 <h3 class="text-xl font-semibold mt-6 mb-3 text-[var(--color-primary-text)]">3. Your Browser's Local Storage</h3>
                 <p>
@@ -99,6 +103,7 @@
             <section>
                 <h2 class="text-2xl font-bold mt-8 mb-4 text-[var(--color-primary-text)] border-b border-[var(--color-border)] pb-2">How We Handle Third-Party Services</h2>
                 <ul class="list-disc list-inside pl-4 space-y-2">
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Website analytics (Vemetric):</strong> Page views and outbound link clicks are sent to Vemetric so we can see how the site is used. No account details or email addresses are included. Vemetric processes this data in the EU. See the analytics section above.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">AI Summaries (OpenRouter):</strong> When you request an on-site TL;DR summary, the content of the article is sent to the OpenRouter API, which routes requests to various AI models. We do not send any personal information about you to OpenRouter or the underlying AI providers.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter descriptions (OpenRouter):</strong> When we prepare the hn30 Daily Dispatch, we may send publicly available article text to OpenRouter to generate short one- or two-sentence descriptions for some stories. These descriptions are stored on our servers and reused in later editions when the same story appears again. No subscriber email addresses or other personal data are sent to OpenRouter for this purpose.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Email newsletter (Mailjet):</strong> If you subscribe to the hn30 Daily Dispatch, your email address and subscription status are stored and processed by Mailjet to deliver emails, manage your list membership, and handle confirmations and unsubscribes. Mailjet may process data in the EU and/or other countries where it operates. See <a href="https://www.mailjet.com/legal/privacy-policy/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary-accent)] hover:underline">Mailjet's privacy policy</a> for details.</li>
@@ -112,7 +117,7 @@
                     We use a minimal approach to cookies. Upon your first visit, you will see a cookie notice explaining our privacy practices:
                 </p>
                 <ul class="list-disc list-inside pl-4 space-y-1 mt-2">
-                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Analytics:</strong> Plausible Analytics (cookie-free) is used for site statistics.</li>
+                    <li><strong class="font-semibold text-[var(--color-primary-text)]">Analytics:</strong> Vemetric (cookie-free) is used for site statistics.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Push Notifications:</strong> OneSignal is only loaded after you accept the cookie notice.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Newsletter sign-up:</strong> If you use our Mailjet subscription form, Mailjet may use cookies or similar technologies on their form pages to process your sign-up and confirmation.</li>
                     <li><strong class="font-semibold text-[var(--color-primary-text)]">Local Storage:</strong> Your preferences are stored locally on your device.</li>
